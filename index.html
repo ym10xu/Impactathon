@@ -1,0 +1,3056 @@
+<title>Access Events — Accessible iPad Onboarding Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+  /* ============================= BASE ============================= */
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    background: #000;
+    font-family:
+      -apple-system, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ============================= FULL-SCREEN STAGE ============================= */
+  /* The whole viewport IS the iPad — no outer chrome, no scaling frame. */
+  #stage {
+    width: 100vw;
+    height: 100dvh;
+  }
+  #app {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ============================= APP SHELL ============================= */
+  #app {
+    --text-scale: 1;
+    font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+    font-size: calc(17px * var(--text-scale));
+  }
+  #app * {
+    font-family: inherit;
+  }
+
+  /* ---- color mode: standard / ios(light) ---- */
+  #app[data-color-mode="standard"],
+  #app[data-color-mode="ios"] {
+    --app-bg: #faf7f2;
+    --app-surface: #ffffff;
+    --app-surface-2: #f1eadc;
+    --app-ink: #1c2321;
+    --app-muted: #5b6b68;
+    --app-border: #e3dacb;
+    --app-border-w: 1px;
+    --app-accent: #119ec4;
+    --app-accent-ink: #ffffff;
+    --app-accent-soft: #e1f2f8;
+    --app-accent-2: #d10074;
+    --app-accent-2-soft: #fbe0ee;
+    --app-focus: #119ec4;
+    --app-success: #1f7a4d;
+    --app-danger: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    #app[data-color-mode="ios"] {
+      --app-bg: #10201d;
+      --app-surface: #182c28;
+      --app-surface-2: #1f3733;
+      --app-ink: #f2efe7;
+      --app-muted: #a9bdb8;
+      --app-border: #2c4640;
+      --app-border-w: 1px;
+      --app-accent: #4dc6e8;
+      --app-accent-ink: #072a33;
+      --app-accent-soft: #12414e;
+      --app-accent-2: #ff5fae;
+      --app-accent-2-soft: #45182e;
+      --app-focus: #4dc6e8;
+      --app-success: #6fe0a0;
+      --app-danger: #ff8b82;
+    }
+  }
+  /* ---- color mode: high contrast ---- */
+  #app[data-color-mode="high-contrast"] {
+    --app-bg: #000000;
+    --app-surface: #000000;
+    --app-surface-2: #0d0d0d;
+    --app-ink: #ffffff;
+    --app-muted: #ffffff;
+    --app-border: #ffffff;
+    --app-border-w: 2px;
+    --app-accent: #ffd60a;
+    --app-accent-ink: #000000;
+    --app-accent-soft: #3a3100;
+    --app-accent-2: #ffd60a;
+    --app-accent-2-soft: #3a3100;
+    --app-focus: #ffd60a;
+    --app-success: #7cff6b;
+    --app-danger: #ff6b6b;
+  }
+  /* ---- color mode: black & white ---- */
+  #app[data-color-mode="bw"] {
+    --app-bg: #ffffff;
+    --app-surface: #ffffff;
+    --app-surface-2: #efefef;
+    --app-ink: #000000;
+    --app-muted: #3b3b3b;
+    --app-border: #000000;
+    --app-border-w: 2px;
+    --app-accent: #000000;
+    --app-accent-ink: #ffffff;
+    --app-accent-soft: #ededed;
+    --app-accent-2: #000000;
+    --app-accent-2-soft: #ededed;
+    --app-focus: #000000;
+    --app-success: #000000;
+    --app-danger: #000000;
+  }
+
+  #app {
+    background: var(--app-bg);
+    color: var(--app-ink);
+  }
+
+  /* ---- button style variants ---- */
+  #app[data-button-style="large-icon"] {
+    --btn-min-h: 60px;
+    --btn-pad: 0.85rem 1.3rem;
+    --btn-icon: 1;
+    --btn-fs: 1.02rem;
+    --btn-radius: 16px;
+  }
+  #app[data-button-style="large-text"] {
+    --btn-min-h: 60px;
+    --btn-pad: 0.85rem 1.4rem;
+    --btn-icon: 0;
+    --btn-fs: 1.05rem;
+    --btn-radius: 16px;
+  }
+  #app[data-button-style="standard-icon"] {
+    --btn-min-h: 46px;
+    --btn-pad: 0.6rem 1rem;
+    --btn-icon: 1;
+    --btn-fs: 0.92rem;
+    --btn-radius: 12px;
+  }
+  #app[data-button-style="standard-text"] {
+    --btn-min-h: 46px;
+    --btn-pad: 0.6rem 1.1rem;
+    --btn-icon: 0;
+    --btn-fs: 0.94rem;
+    --btn-radius: 12px;
+  }
+  .btn-icon-slot {
+    display: none;
+  }
+  #app[data-button-style$="icon"] .btn-icon-slot {
+    display: inline-flex;
+  }
+
+  /* ============================= LAYOUT PRIMITIVES ============================= */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  .scr-header {
+    padding: clamp(14px, 2.4vh, 26px) clamp(20px, 3vw, 40px) 0;
+  }
+  .scr-body {
+    padding: 6px clamp(20px, 3vw, 40px);
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .scr-footer {
+    padding: clamp(12px, 2vh, 20px) clamp(20px, 3vw, 40px)
+      clamp(16px, 2.6vh, 28px);
+    border-top: var(--app-border-w) solid var(--app-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--app-surface);
+  }
+
+  .eyebrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .step-pill {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--app-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .top-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  h1.scr-title {
+    font-family:
+      ui-rounded,
+      "SF Pro Rounded",
+      -apple-system,
+      system-ui,
+      sans-serif;
+    font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+    margin: 0 0 6px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  p.scr-explain {
+    margin: 0 0 14px;
+    color: var(--app-muted);
+    line-height: 1.5;
+    font-size: 1rem;
+    max-width: 70ch;
+  }
+
+  /* progress bar */
+  .progress-track {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--app-surface-2);
+    border: var(--app-border-w) solid var(--app-border);
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--app-accent);
+    border-radius: 99px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .progress-fill {
+      transition: width 0.3s ease;
+    }
+  }
+
+  /* buttons (generic) */
+  .btn {
+    font-size: var(--btn-fs, 0.95rem);
+    font-weight: 700;
+    min-height: var(--btn-min-h, 46px);
+    border-radius: var(--btn-radius, 12px);
+    padding: var(--btn-pad, 0.6rem 1rem);
+    border: var(--app-border-w) solid var(--app-border);
+    background: var(--app-surface);
+    color: var(--app-ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1.15;
+  }
+  .icon-svg {
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+    display: inline-block;
+    vertical-align: -0.15em;
+  }
+  .hero-thumb svg {
+    width: 2em;
+    height: 2em;
+  }
+  .event-thumb svg {
+    width: 1.5em;
+    height: 1.5em;
+  }
+  .btn:hover {
+    border-color: var(--app-accent);
+  }
+  .btn:focus-visible {
+    outline: 3px solid var(--app-focus);
+    outline-offset: 2px;
+  }
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--app-accent);
+    color: var(--app-accent-ink);
+    border-color: var(--app-accent);
+  }
+  .btn-ghost {
+    background: transparent;
+  }
+  .btn-danger-outline {
+    border-color: var(--app-danger);
+    color: var(--app-danger);
+  }
+  .btn-sm {
+    min-height: 44px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    border-radius: 10px;
+  }
+  .btn-block {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .icon-only-hidden-label {
+  }
+
+  /* choice cards (radio/checkbox style) */
+  .choice-grid {
+    display: grid;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+    grid-auto-rows: 1fr;
+  }
+  .choice-card {
+    border: var(--app-border-w) solid var(--app-border);
+    background: var(--app-surface);
+    border-radius: 14px;
+    padding: 8px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .choice-card:focus-visible {
+    outline: 3px solid var(--app-focus);
+    outline-offset: 2px;
+  }
+  .choice-card[aria-checked="true"],
+  .choice-card[aria-pressed="true"] {
+    border-color: var(--app-accent);
+    background: var(--app-accent-soft);
+    box-shadow: 0 0 0 3px var(--app-accent);
+  }
+  .choice-check-badge {
+    flex: none;
+    color: var(--app-accent);
+  }
+  .choice-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .choice-title {
+    font-weight: 800;
+    font-size: 1.2em;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .choice-sub {
+    color: var(--app-muted);
+    font-size: 0.95em;
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+
+  /* surfaces / cards */
+  .surface {
+    background: var(--app-surface);
+    border: var(--app-border-w) solid var(--app-border);
+    border-radius: 18px;
+    padding: 16px;
+  }
+  .surface-2 {
+    background: var(--app-surface-2);
+    border: var(--app-border-w) solid var(--app-border);
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  /* chips */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: var(--app-border-w) solid var(--app-border);
+    background: var(--app-surface-2);
+    color: var(--app-ink);
+  }
+  .chip.on {
+    background: var(--app-accent);
+    color: var(--app-accent-ink);
+    border-color: var(--app-accent);
+  }
+  .chip.tag-free {
+    background: var(--app-success);
+    color: #fff;
+    border-color: var(--app-success);
+  }
+  #app[data-color-mode="bw"] .chip.tag-free {
+    background: var(--app-ink);
+    color: var(--app-bg);
+  }
+  #app[data-color-mode="high-contrast"] .chip.tag-free {
+    color: #000;
+  }
+
+  /* focus ring globally inside app */
+  #app :focus {
+    outline: none;
+  }
+  #app :focus-visible {
+    outline: 3px solid var(--app-focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* pagination footer */
+  .pager {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .pager-status {
+    font-size: 0.85rem;
+    color: var(--app-muted);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  /* grid of event cards */
+  .event-grid {
+    display: grid;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+  }
+  .event-card {
+    border: var(--app-border-w) solid var(--app-border);
+    background: var(--app-surface);
+    border-radius: 18px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .event-card:focus-visible {
+    outline: 3px solid var(--app-focus);
+    outline-offset: 2px;
+  }
+  .event-thumb {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+  .event-card h3 {
+    margin: 0 0 2px;
+    font-size: 1.05em;
+    line-height: 1.25;
+  }
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    color: var(--app-muted);
+    font-size: 0.85em;
+    margin-top: 4px;
+  }
+  .event-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* single event hero card */
+  .hero-card {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(180px, 34%) 1fr;
+    gap: 22px;
+    min-height: 0;
+  }
+  .hero-thumb {
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  /* filter grid */
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-aspect-ratio: 4/3) {
+    .filter-grid.activities {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* device orientation helper classes set programmatically via inline width/height */
+  .help-banner {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--app-accent-soft);
+    border: var(--app-border-w) solid var(--app-accent);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .a11y-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .a11y-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: var(--app-border-w) solid var(--app-border);
+  }
+  .a11y-badge.confirmed {
+    background: var(--app-success);
+    color: #fff;
+    border-color: var(--app-success);
+  }
+  .a11y-badge.unknown {
+    background: var(--app-surface-2);
+    color: var(--app-muted);
+    border-style: dashed;
+  }
+  .a11y-badge.contact {
+    background: var(--app-accent-2-soft);
+    color: var(--app-accent-2);
+    border-color: var(--app-accent-2);
+  }
+  #app[data-color-mode="bw"] .a11y-badge.confirmed {
+    background: var(--app-ink);
+    color: var(--app-bg);
+  }
+  #app[data-color-mode="high-contrast"] .a11y-badge.confirmed {
+    color: #000;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<div id="stage">
+  <div id="app" role="application" aria-label="Access Events app"></div>
+</div>
+<div id="liveRegion" class="sr-only" aria-live="polite"></div>
+
+<script>
+  (function () {
+    "use strict";
+
+    /* ============================= ICONS ============================= */
+    var ICONS = {
+      check: '<path d="M4 12.5 9.5 18 20 6"/>',
+      chevronLeft: '<path d="M15 5 8 12l7 7"/>',
+      chevronRight: '<path d="M9 5l7 7-7 7"/>',
+      close: '<path d="M5 5l14 14M19 5 5 19"/>',
+      help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.5 2.5 0 1 1 3.7 2.2c-.9.5-1.2 1-1.2 2.1"/><circle cx="12" cy="17.2" r=".4" fill="currentColor" stroke="none"/>',
+      filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+      clear: '<path d="M6 6l12 12M18 6 6 18"/>',
+      settings:
+        '<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.2-1.6l2-1.6-2-3.4-2.4.9a7 7 0 0 0-2.7-1.6L13 2h-4l-.7 2.7a7 7 0 0 0-2.7 1.6l-2.4-.9-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .5 0 1.1.2 1.6l-2 1.6 2 3.4 2.4-.9c.8.7 1.7 1.3 2.7 1.6L9 22h4l.7-2.7a7 7 0 0 0 2.7-1.6l2.4.9 2-3.4-2-1.6c.1-.5.2-1.1.2-1.6Z"/>',
+      home: '<path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/>',
+      calendar:
+        '<rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3.5v4M16 3.5v4"/>',
+      clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+      pin: '<path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+      tag: '<path d="M12.5 3.5H20v7.5L11 20 3.5 12.5Z"/><circle cx="16" cy="7.5" r="1.4" fill="currentColor" stroke="none"/>',
+      wheelchair:
+        '<circle cx="8.5" cy="5" r="2"/><path d="M8.5 8v6l6 4M8.5 12h6l3 7M8.5 12 6 20"/>',
+      speaker:
+        '<path d="M4 9v6h4l5 4V5L8 9Z"/><path d="M16.5 9a5 5 0 0 1 0 6"/>',
+      speakerOff:
+        '<path d="M4 9v6h4l5 4V5L8 9Z"/><path d="M17 9l4 6M21 9l-4 6"/>',
+      play: '<path d="M7 5v14l12-7Z"/>',
+      pause: '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>',
+      stop: '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
+      replay: '<path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 17v-5h5"/>',
+      captions:
+        '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M7 10.3h3M7 13.7h6M13 10.3h4"/>',
+      asl: '<path d="M7 21v-6.5L5 10a1.4 1.4 0 0 1 2.4-1.4L9 11V4a1.2 1.2 0 0 1 2.4 0v6M11.4 10V3.6a1.2 1.2 0 1 1 2.4 0V10m0-4.4V4a1.2 1.2 0 1 1 2.4 0v6.4M18.6 10.4v-3a1.2 1.2 0 1 1 2.4 0V15c0 3.3-2.2 6-6 6H10"/>',
+      quiet:
+        '<path d="M4 9v6h4l5 4V5L8 9Z"/><path d="M16 9l4 6M20 9l-4 6"/><circle cx="18" cy="6" r="0"/>',
+      seat: '<path d="M6 10V6a2 2 0 0 1 2-2h2M6 10h12v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Zm0 0v8M18 10V6M4 20h4m8 0h4"/>',
+      allergy:
+        '<path d="M12 3c4 3 6.5 6.2 6.5 9.5A6.5 6.5 0 0 1 5.5 12.5C5.5 9.2 8 6 12 3Z"/><path d="M9 15.5c1 1.5 2 2 3 2"/>',
+      bus: '<rect x="4" y="4.5" width="16" height="12" rx="2.5"/><path d="M4 12h16M8 20l-1 1.4M16 20l1 1.4"/><circle cx="8" cy="16.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="16.5" r="1.1" fill="currentColor" stroke="none"/>',
+      car: '<path d="M4 16V12l2-5h12l2 5v4"/><path d="M4 16h16M7 16v2.5M17 16v2.5"/><circle cx="8" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="13" r="1" fill="currentColor" stroke="none"/>',
+      bike: '<circle cx="6.5" cy="17" r="3.2"/><circle cx="17.5" cy="17" r="3.2"/><path d="M6.5 17 10 8h4l3.5 9M10 8H8m2.5 6h6"/>',
+      walk: '<circle cx="13.5" cy="4.5" r="1.7"/><path d="M11 8l2 3-1 6M13 11l3 1.5-1 5.5M13 11l-3 2-2.5 6"/>',
+      driven:
+        '<circle cx="8" cy="6" r="1.7"/><path d="M6 20l1.5-6-2-2 1-3.5 3-1 2.5 2 3-1M16 20l-1-6 3-3"/>',
+      question:
+        '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.6 2.3c-1 .5-1.1 1.1-1.1 2.1"/><circle cx="12" cy="16.8" r=".4" fill="currentColor" stroke="none"/>',
+      ball: '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M4 8.5h16M4 15.5h16"/>',
+      art: '<path d="M12 3.5A8.5 8.5 0 1 0 20.5 12c0-1.2-1-2-2.2-2h-2a2 2 0 0 1-2-2.3c.2-1.3-.8-2.6-2.1-2.7Z"/><circle cx="8" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>',
+      social:
+        '<circle cx="8.5" cy="9" r="2.7"/><circle cx="17" cy="10" r="2.2"/><path d="M3.5 19c.5-3 2.4-4.7 5-4.7s4.5 1.7 5 4.7M15 19c.3-2.2 1.6-3.6 3.5-3.6s3.2 1.4 3.5 3.6"/>',
+      food: '<path d="M6 3v8m-2-8v4a2 2 0 0 0 4 0V3M6 11v10M18 3c-2 0-3.5 2-3.5 5s1.2 4 2 4.3V21"/>',
+      music:
+        '<circle cx="7" cy="18" r="2.3"/><circle cx="17" cy="16" r="2.3"/><path d="M9.3 18V5.5L19.3 4v11.7"/>',
+      learning:
+        '<path d="M3.5 6.5 12 3l8.5 3.5L12 10Z"/><path d="M6.5 8.3V15c0 1.8 2.5 3.2 5.5 3.2s5.5-1.4 5.5-3.2V8.3M20.5 6.5V13"/>',
+      outdoors: '<path d="M5 19 10 9l3 5 2-3 4 8Z"/><path d="M3.5 19h17"/>',
+      volunteer:
+        '<path d="M12 20.5C6 17 3 13.3 3 9.7 3 7 5.1 5 7.7 5c1.6 0 3 .8 3.8 2.1M12 20.5c6-3.5 9-7.2 9-10.8C21 7 18.9 5 16.3 5c-1.6 0-3 .8-3.8 2.1"/><path d="M9 10.5h6M12 7.5v6"/>',
+      other:
+        '<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8Z"/>',
+      aa: '<path d="M4 17 8 6l4 11M5.4 13.4h5.2"/><path d="M14 17c0-2 1.2-3 2.8-3s2.7 1 2.7 3v.3c0 1.2-1 2.2-2.2 2.2-1 0-1.8-.7-1.8-1.6 0-1.3 1.5-1.7 3.9-2"/>',
+    };
+    function icon(name, cls) {
+      return (
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="icon-svg ' +
+        (cls || "") +
+        '">' +
+        (ICONS[name] || ICONS.other) +
+        "</svg>"
+      );
+    }
+    function iconSlot(name) {
+      return '<span class="btn-icon-slot">' + icon(name) + "</span>";
+    }
+
+    /* ============================= MOCK EVENT DATA ============================= */
+    var CATS = {
+      sports: { label: "Sports", icon: "ball" },
+      art: { label: "Art", icon: "art" },
+      social: { label: "Social", icon: "social" },
+      food: { label: "Food", icon: "food" },
+      music: { label: "Music", icon: "music" },
+      learning: { label: "Learning", icon: "learning" },
+      outdoors: { label: "Outdoors", icon: "outdoors" },
+      volunteering: { label: "Volunteering", icon: "volunteer" },
+      other: { label: "Other", icon: "other" },
+    };
+    var THUMB_TONE = {
+      sports: 0,
+      art: 1,
+      social: 2,
+      food: 0,
+      music: 1,
+      outdoors: 2,
+      learning: 0,
+      volunteering: 1,
+      other: 2,
+    };
+
+    var EVENTS = [
+      {
+        id: 1,
+        title: "Accessible Art Class",
+        cat: "art",
+        when: "today",
+        whenLabel: "Today",
+        time: "2:00 PM",
+        location: "Riverside Community Centre",
+        minutes: 12,
+        cost: 0,
+        features: ["sensory", "captions", "wheelchair", "seating"],
+        notProvided: ["asl"],
+        contact: ["support"],
+        full: "Join us for an accessible art class at the Riverside Community Centre today. The class begins at 2:00 PM, and all materials will be provided.",
+      },
+      {
+        id: 2,
+        title: "Morning Walking Group",
+        cat: "outdoors",
+        when: "today",
+        whenLabel: "Today",
+        time: "9:30 AM",
+        location: "Willow Park Trailhead",
+        minutes: 8,
+        cost: 0,
+        features: ["wheelchair", "service-animals"],
+        notProvided: ["quiet"],
+        contact: ["transport"],
+        full: "Come along to the Morning Walking Group at Willow Park Trailhead today. We set off at 9:30 AM on a flat, paved loop, and the pace is gentle throughout.",
+      },
+      {
+        id: 3,
+        title: "Community Choir Rehearsal",
+        cat: "music",
+        when: "week",
+        whenLabel: "This Week · Wed",
+        time: "6:30 PM",
+        location: "St. James Hall",
+        minutes: 22,
+        cost: 0,
+        features: ["captions", "support"],
+        notProvided: ["asl", "wheelchair"],
+        contact: ["allergy"],
+        full: "The Community Choir welcomes new voices at St. James Hall this Wednesday. Rehearsal runs from 6:30 PM, and printed lyric sheets are available at the door.",
+      },
+      {
+        id: 4,
+        title: "Adaptive Basketball League",
+        cat: "sports",
+        when: "week",
+        whenLabel: "This Week · Thu",
+        time: "5:00 PM",
+        location: "Eastview Rec Complex",
+        minutes: 18,
+        cost: 5,
+        features: ["wheelchair", "accessible-washroom", "seating", "transport"],
+        notProvided: [],
+        contact: ["allergy"],
+        full: "The Adaptive Basketball League plays every Thursday at Eastview Rec Complex starting at 5:00 PM. Equipment is provided and all skill levels are welcome; a $5 drop-in fee covers gym costs.",
+      },
+      {
+        id: 5,
+        title: "Sensory-Friendly Movie Morning",
+        cat: "social",
+        when: "week",
+        whenLabel: "This Week · Sat",
+        time: "10:00 AM",
+        location: "Grandview Cinema",
+        minutes: 15,
+        cost: 8,
+        features: ["sensory", "quiet", "captions", "wheelchair"],
+        notProvided: [],
+        contact: [],
+        full: "Grandview Cinema hosts a sensory-friendly screening this Saturday at 10:00 AM, with lower volume, house lights kept on low, and no previews or loud ads. Tickets are $8.",
+      },
+      {
+        id: 6,
+        title: "Neighbourhood Potluck Supper",
+        cat: "food",
+        when: "month",
+        whenLabel: "This Month · 18th",
+        time: "5:30 PM",
+        location: "Maple Street Hall",
+        minutes: 25,
+        cost: 0,
+        features: ["allergy", "wheelchair", "support"],
+        notProvided: ["asl"],
+        contact: ["transport"],
+        full: "Bring a dish or just yourself to the Neighbourhood Potluck Supper at Maple Street Hall on the 18th, starting at 5:30 PM. Allergen labels are provided for every dish.",
+      },
+      {
+        id: 7,
+        title: "Beginner Pottery Workshop",
+        cat: "art",
+        when: "month",
+        whenLabel: "This Month · 22nd",
+        time: "1:00 PM",
+        location: "Clayworks Studio",
+        minutes: 30,
+        cost: 20,
+        features: ["seating", "support"],
+        notProvided: ["wheelchair"],
+        contact: ["transport", "allergy"],
+        full: "Learn hand-building basics at the Beginner Pottery Workshop, Clayworks Studio, on the 22nd at 1:00 PM. The studio is a walk-up second floor space; contact the organizer about step-free access.",
+      },
+      {
+        id: 8,
+        title: "ASL Storytime for Adults",
+        cat: "learning",
+        when: "week",
+        whenLabel: "This Week · Fri",
+        time: "11:00 AM",
+        location: "Central Library, Room 2",
+        minutes: 5,
+        cost: 0,
+        features: ["asl", "captions", "wheelchair", "quiet"],
+        notProvided: [],
+        contact: [],
+        full: "Central Library hosts ASL Storytime for Adults this Friday at 11:00 AM in Room 2, fully interpreted with captioned readings and a quiet, low-traffic space.",
+      },
+      {
+        id: 9,
+        title: "Volunteer Garden Day",
+        cat: "volunteering",
+        when: "month",
+        whenLabel: "This Month · 27th",
+        time: "10:00 AM",
+        location: "Elmwood Community Garden",
+        minutes: 20,
+        cost: 0,
+        features: ["wheelchair", "service-animals", "seating"],
+        notProvided: ["quiet"],
+        contact: ["transport"],
+        full: "Help tend raised, wheelchair-height garden beds at Elmwood Community Garden on the 27th from 10:00 AM. Gloves and tools are provided; seating is set up throughout the plot.",
+      },
+      {
+        id: 10,
+        title: "Trivia Night: Social Club",
+        cat: "social",
+        when: "upcoming",
+        whenLabel: "Next Month · 3rd",
+        time: "7:00 PM",
+        location: "The Corner Lounge",
+        minutes: 35,
+        cost: 0,
+        features: ["captions", "support"],
+        notProvided: ["sensory", "quiet"],
+        contact: ["allergy"],
+        full: "The Social Club’s Trivia Night returns to The Corner Lounge on the 3rd of next month at 7:00 PM, with questions displayed on-screen and a relaxed team format.",
+      },
+      {
+        id: 11,
+        title: "Accessible Kayaking Taster",
+        cat: "outdoors",
+        when: "upcoming",
+        whenLabel: "Next Month · 9th",
+        time: "11:00 AM",
+        location: "Blue Heron Boathouse",
+        minutes: 28,
+        cost: 15,
+        features: ["wheelchair", "accessible-washroom", "transport"],
+        notProvided: ["quiet"],
+        contact: ["allergy"],
+        full: "Try adaptive kayaking equipment at the Blue Heron Boathouse taster session on the 9th of next month, starting 11:00 AM. Transfer benches and trained staff support entry to the water.",
+      },
+      {
+        id: 12,
+        title: "Job Skills Coffee Chat",
+        cat: "learning",
+        when: "today",
+        whenLabel: "Today",
+        time: "4:00 PM",
+        location: "Downtown Hub, Rm 5",
+        minutes: 6,
+        cost: 0,
+        features: ["quiet", "wheelchair", "support"],
+        notProvided: ["asl"],
+        contact: [],
+        full: "Drop into the Job Skills Coffee Chat at Downtown Hub, Room 5, today at 4:00 PM — an informal, quiet-paced space to ask questions about résumés and interviews over coffee.",
+      },
+    ];
+
+    var FEATURE_META = {
+      sensory: { label: "Sensory-friendly environment", icon: "quiet" },
+      quiet: { label: "Quiet space", icon: "quiet" },
+      asl: { label: "ASL interpretation", icon: "asl" },
+      captions: { label: "Captions", icon: "captions" },
+      wheelchair: {
+        label: "Wheelchair-accessible entrance",
+        icon: "wheelchair",
+      },
+      "accessible-washroom": {
+        label: "Accessible washroom",
+        icon: "wheelchair",
+      },
+      "service-animals": { label: "Service animals welcome", icon: "social" },
+      support: { label: "Support person welcome", icon: "social" },
+      transport: { label: "Accessible transportation", icon: "bus" },
+      seating: { label: "Seating available", icon: "seat" },
+      allergy: { label: "Food and allergy information", icon: "allergy" },
+    };
+    var NEED_GROUP_1 = [
+      "sensory",
+      "quiet",
+      "asl",
+      "captions",
+      "wheelchair",
+      "accessible-washroom",
+      "service-animals",
+    ];
+    var NEED_GROUP_2 = ["support", "transport", "seating", "allergy", "other"];
+
+    function joinPhrase(ev) {
+      var starters = {
+        sports: "a game with",
+        art: "an art session at",
+        social: "a get-together at",
+        food: "a meal at",
+        music: "a music event at",
+        learning: "a learning session at",
+        outdoors: "an outdoor activity at",
+        volunteering: "a volunteer activity at",
+        other: "an event at",
+      };
+      return (starters[ev.cat] || "an event at") + " " + ev.location;
+    }
+    function complexityText(ev, level) {
+      if (level === "key")
+        return (
+          ev.title + " · " + ev.whenLabel + " " + ev.time + " · " + ev.location
+        );
+      if (level === "short")
+        return (
+          "Join " +
+          joinPhrase(ev) +
+          ". It starts at " +
+          ev.time +
+          " " +
+          ev.whenLabel.toLowerCase() +
+          ". It is at " +
+          ev.location +
+          "."
+        );
+      return ev.full;
+    }
+    function costText(ev, level) {
+      var amt = ev.cost === 0 ? "Free" : "$" + ev.cost;
+      if (level === "key") return amt;
+      if (level === "short")
+        return ev.cost === 0
+          ? "This event is free."
+          : "This event costs $" + ev.cost + ".";
+      return ev.cost === 0
+        ? "There is no cost to attend this event."
+        : "Attending this event costs $" +
+            ev.cost +
+            " per person, payable at registration.";
+    }
+
+    /* ============================= STATE ============================= */
+    var DEFAULTS = {
+      onboardingComplete: false,
+      screen: "onb",
+      step: 0,
+      editing: false,
+      editReturnStep: null,
+      previewPage: 0,
+      filterPage: 0,
+      activeEventId: null,
+      browsePage: 0,
+      helpOpen: false,
+      registered: false,
+      buttonStyle: "large-icon",
+      audioMode: "important",
+      colorMode: "ios",
+      textSize: "standard",
+      complexity: "short",
+      browsing: "grid",
+      costPref: "no-pref",
+      locationMode: "none",
+      locationValue: "",
+      transport: [],
+      travelTime: "up30",
+      needs: [],
+      filters: { time: "upcoming", activities: [] },
+    };
+    var state = null;
+    function loadState() {
+      var saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem("accessEventsDemoV1"));
+      } catch (e) {}
+      state = Object.assign({}, DEFAULTS, saved || {});
+      state.screen = state.onboardingComplete ? "browse" : "onb";
+      state.step = 0;
+      state.editing = false;
+      state.helpOpen = false;
+      state.filterPage = 0;
+      state.previewPage = 0;
+    }
+    var PERSIST_KEYS = [
+      "onboardingComplete",
+      "buttonStyle",
+      "audioMode",
+      "colorMode",
+      "textSize",
+      "complexity",
+      "browsing",
+      "costPref",
+      "locationMode",
+      "locationValue",
+      "transport",
+      "travelTime",
+      "needs",
+      "filters",
+    ];
+    function saveState() {
+      var out = {};
+      PERSIST_KEYS.forEach(function (k) {
+        out[k] = state[k];
+      });
+      try {
+        localStorage.setItem("accessEventsDemoV1", JSON.stringify(out));
+      } catch (e) {}
+    }
+    function resetAll() {
+      try {
+        localStorage.removeItem("accessEventsDemoV1");
+      } catch (e) {}
+      loadState();
+      render(true);
+    }
+
+    /* ============================= SPEECH ============================= */
+    var speech = { utter: null, playing: false, paused: false, text: "" };
+    function speak(text) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.95;
+      u.onend = function () {
+        speech.playing = false;
+        speech.paused = false;
+        updateSpeechUI();
+      };
+      u.onstart = function () {
+        speech.playing = true;
+        speech.paused = false;
+        updateSpeechUI();
+      };
+      speech.utter = u;
+      speech.text = text;
+      window.speechSynthesis.speak(u);
+      updateSpeechUI();
+    }
+    function speechPause() {
+      if ("speechSynthesis" in window && speech.playing) {
+        window.speechSynthesis.pause();
+        speech.paused = true;
+        updateSpeechUI();
+      }
+    }
+    function speechResume() {
+      if ("speechSynthesis" in window && speech.paused) {
+        window.speechSynthesis.resume();
+        speech.paused = false;
+        updateSpeechUI();
+      }
+    }
+    function speechStop() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      speech.playing = false;
+      speech.paused = false;
+      updateSpeechUI();
+    }
+    function speechReplay() {
+      if (speech.text) speak(speech.text);
+    }
+    function updateSpeechUI() {
+      var root = document.getElementById("app");
+      if (!root) return;
+      root.querySelectorAll("[data-speech-controls]").forEach(function (box) {
+        var playBtn = box.querySelector('[data-sp="play"]');
+        var pauseBtn = box.querySelector('[data-sp="pause"]');
+        if (playBtn)
+          playBtn.style.display =
+            speech.playing && !speech.paused ? "none" : "inline-flex";
+        if (pauseBtn)
+          pauseBtn.style.display =
+            speech.playing && !speech.paused ? "inline-flex" : "none";
+      });
+    }
+
+    /* ============================= HELPERS ============================= */
+    function announce(msg) {
+      var lr = document.getElementById("liveRegion");
+      if (lr) {
+        lr.textContent = "";
+        setTimeout(function () {
+          lr.textContent = msg;
+        }, 30);
+      }
+    }
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+    function on(root, sel, evt, fn) {
+      root.querySelectorAll(sel).forEach(function (el) {
+        el.addEventListener(evt, fn);
+      });
+    }
+    function orientation() {
+      return "landscape";
+    }
+    function gridConfig() {
+      var table = {
+        portrait: { standard: 2, large: 2, "very-large": 1 },
+        landscape: { standard: 4, large: 3, "very-large": 2 },
+      };
+      var n = table[orientation()][state.textSize];
+      if (state.complexity === "full") n = Math.max(1, n - 1);
+      return n;
+    }
+    function resolvedButtonSize() {
+      return state.buttonStyle.indexOf("large") === 0 ? "large" : "standard";
+    }
+
+    /* ============================= NAVIGATION ============================= */
+    var ONB_STEPS = [
+      "welcome",
+      "buttons",
+      "audio",
+      "color",
+      "complexity",
+      "browsing",
+      "cost",
+      "location",
+      "transport",
+      "travel",
+      "needs1",
+      "needs2",
+      "preview",
+    ];
+    function stepIndex(id) {
+      return ONB_STEPS.indexOf(id);
+    }
+    function goStep(id) {
+      state.step = stepIndex(id);
+      state.screen = "onb";
+      state.helpOpen = false;
+      render(true);
+      announceStep();
+    }
+    function nextStep() {
+      var i = state.step + 1;
+      if (i < ONB_STEPS.length - 1 || ONB_STEPS[i] === "preview") {
+        state.step = i;
+        state.helpOpen = false;
+        render(true);
+        announceStep();
+      }
+    }
+    function prevStep() {
+      if (state.step > 0) {
+        state.step--;
+        state.helpOpen = false;
+        render(true);
+        announceStep();
+      }
+    }
+    function announceStep() {
+      if (state.screen === "onb") {
+        var id = ONB_STEPS[state.step];
+        announce(
+          "Step " +
+            (state.step + 1) +
+            " of " +
+            ONB_STEPS.length +
+            ": " +
+            STEP_META[id].title,
+        );
+      }
+    }
+    function go(screen, patch) {
+      Object.assign(state, patch || {});
+      state.screen = screen;
+      state.helpOpen = false;
+      render(true);
+    }
+    function startEdit(stepId, returnTo) {
+      state.editing = true;
+      state.editReturnStep = returnTo || "settings";
+      state.step = stepIndex(stepId);
+      state.screen = "onb";
+      render(true);
+      announce("Editing: " + STEP_META[stepId].title);
+    }
+    function finishEdit() {
+      state.editing = false;
+      go(state.editReturnStep || "settings");
+    }
+
+    /* generic re-render preserving focused element + scroll-safety (no scroll, so just focus) */
+    function update(patch, opts) {
+      Object.assign(state, patch);
+      saveState();
+      render(!(opts && opts.silent));
+    }
+    function render(moveFocus) {
+      var activeId = document.activeElement && document.activeElement.id;
+      var app = document.getElementById("app");
+      app.setAttribute("data-color-mode", state.colorMode);
+      app.setAttribute("data-button-style", state.buttonStyle);
+      app.setAttribute("data-text-size", state.textSize);
+      var scaleMap = { standard: 1, large: 1.18, "very-large": 1.42 };
+      app.style.setProperty("--text-scale", scaleMap[state.textSize]);
+      app.innerHTML = renderScreen();
+      wireScreen(app);
+      updateSpeechUI();
+      if (moveFocus) {
+        var h = app.querySelector("[data-autofocus]");
+        if (h) h.focus();
+      } else if (activeId) {
+        var el = document.getElementById(activeId);
+        if (el) el.focus();
+      }
+    }
+
+    /* ============================= SHARED CHROME ============================= */
+    function quickSettingsBar() {
+      return (
+        '<div class="top-actions">' +
+        '<button class="btn btn-sm btn-ghost" id="qsAa" aria-label="Text size, currently ' +
+        state.textSize +
+        '">' +
+        icon("aa") +
+        '<span class="btn-icon-slot" style="display:inline">&nbsp;Aa</span></button>' +
+        '<button class="btn btn-sm btn-ghost" id="qsHelp" aria-label="Help for this screen">' +
+        icon("help") +
+        '<span class="btn-icon-slot" style="display:inline">&nbsp;Help</span></button>' +
+        "</div>"
+      );
+    }
+    function textSizeMenu() {
+      var opts = [
+        ["standard", "Standard"],
+        ["large", "Large"],
+        ["very-large", "Very Large"],
+      ];
+      return (
+        '<div class="surface" role="group" aria-label="Text size" style="position:absolute; top:64px; right:20px; z-index:20; display:flex; flex-direction:column; gap:8px; box-shadow:0 12px 30px -12px rgba(0,0,0,.35);">' +
+        opts
+          .map(function (o) {
+            return (
+              '<button class="btn btn-sm" data-textsize="' +
+              o[0] +
+              '" aria-pressed="' +
+              (state.textSize === o[0]) +
+              '">' +
+              (state.textSize === o[0] ? icon("check") : "") +
+              "<span>" +
+              o[1] +
+              "</span></button>"
+            );
+          })
+          .join("") +
+        '<button class="btn btn-sm btn-ghost" id="qsAaClose">Close</button></div>'
+      );
+    }
+    function speechControls(text, label) {
+      return (
+        '<div class="surface-2" data-speech-controls style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">' +
+        '<strong style="font-size:.85em;">' +
+        icon("speaker") +
+        " " +
+        (label || "Hear this") +
+        "</strong>" +
+        '<button class="btn btn-sm btn-primary" data-sp="play" data-say="' +
+        esc(text) +
+        '">' +
+        icon("play") +
+        "<span>Play</span></button>" +
+        '<button class="btn btn-sm" data-sp="pause" style="display:none;" data-sa="pause">' +
+        icon("pause") +
+        "<span>Pause</span></button>" +
+        '<button class="btn btn-sm" data-sa="stop">' +
+        icon("stop") +
+        "<span>Stop</span></button>" +
+        '<button class="btn btn-sm" data-sa="replay">' +
+        icon("replay") +
+        "<span>Replay</span></button>" +
+        "</div>"
+      );
+    }
+    function progress() {
+      var pct = Math.round((state.step / (ONB_STEPS.length - 1)) * 100);
+      return (
+        '<div class="progress-track"><div class="progress-fill" style="width:' +
+        pct +
+        '%"></div></div>'
+      );
+    }
+    function footerNav(opts) {
+      opts = opts || {};
+      var backDisabled = opts.backDisabled;
+      var backBtn =
+        '<button class="btn" id="navBack" ' +
+        (backDisabled ? "disabled" : "") +
+        ">" +
+        icon("chevronLeft") +
+        "<span>" +
+        (opts.backLabel || "Back") +
+        "</span></button>";
+      var nextLabel = opts.nextLabel || "Next";
+      return (
+        backBtn +
+        '<div class="pager-status" aria-hidden="true">' +
+        (opts.status || "") +
+        "</div>" +
+        '<button class="btn btn-primary" id="navNext">' +
+        "<span>" +
+        nextLabel +
+        "</span>" +
+        icon("chevronRight") +
+        "</button>"
+      );
+    }
+
+    /* ============================= STEP METADATA + RENDERERS ============================= */
+    var STEP_META = {
+      welcome: { title: "Welcome to Access Events" },
+      buttons: { title: "Button Size & Style" },
+      audio: { title: "Audio Support" },
+      color: { title: "Colour & Contrast" },
+      complexity: { title: "How much information?" },
+      browsing: { title: "Event Browsing Style" },
+      cost: { title: "Event Cost" },
+      location: { title: "Your Location" },
+      transport: { title: "Getting There" },
+      travel: { title: "Travel Time" },
+      needs1: { title: "Accessibility Preferences" },
+      needs2: { title: "Accessibility Preferences, Continued" },
+      preview: { title: "Your Preview" },
+    };
+    var HELP_TEXT = {
+      welcome:
+        "This short setup helps the app match how you like to see and hear information. You can change every choice later in Settings.",
+      buttons:
+        "Pick how buttons look and feel. Large buttons give more room for touch or switch control. You can change this any time.",
+      audio:
+        "Choose whether the app reads information aloud. Audio never starts on its own — you always press Play.",
+      color:
+        "Choose colours and contrast that are easiest for you to read. Every mode keeps icons and labels, not just colour, to show meaning.",
+      complexity:
+        "Choose how much detail you want to read. Important information like cost and safety is always included, at every level.",
+      browsing:
+        "Choose whether you see one event at a time, or a few at once in a grid.",
+      cost: "This helps the app show events that fit your budget. You can change this any time.",
+      location:
+        "This helps the app find events near you. Sharing an exact location is never required.",
+      transport:
+        "Pick every way you might get to an event. This helps the app judge which events are realistic for you.",
+      travel:
+        "How far you are willing to travel helps narrow down the list of events shown to you.",
+      needs1:
+        "These are the supports that make an event work for you — not medical information. Choose as many as apply.",
+      needs2:
+        "A few more supports to choose from, plus the option to say none apply or to skip this question.",
+      preview:
+        "This is a realistic look at the app with your choices applied. You can go back and change anything.",
+    };
+
+    function renderHelpOverlay() {
+      var id = ONB_STEPS[state.step];
+      var text =
+        state.screen === "onb"
+          ? HELP_TEXT[id]
+          : "Use Previous and Next, or Tab and Enter, to move around. Your choices are saved as you go.";
+      return (
+        '<div class="screen">' +
+        '<div class="scr-header"><div class="eyebrow-row"><span class="step-pill">Help</span></div>' +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>' +
+        icon("help") +
+        " Help</h1></div>" +
+        '<div class="scr-body"><div class="surface"><p style="font-size:1.1em; line-height:1.6; margin:0;">' +
+        esc(text) +
+        "</p></div></div>" +
+        '<div class="scr-footer"><div></div><button class="btn btn-primary" id="closeHelp">' +
+        icon("close") +
+        "<span>Close Help</span></button></div>" +
+        "</div>"
+      );
+    }
+
+    function wizardShell(id, body, footer) {
+      var idx = state.editing ? -1 : state.step;
+      var statusText = state.editing
+        ? "Editing preference"
+        : "Step " + (state.step + 1) + " of " + ONB_STEPS.length;
+      return (
+        '<div class="screen">' +
+        '<div class="scr-header">' +
+        '<div class="eyebrow-row"><span class="step-pill" id="stepPill">' +
+        statusText +
+        "</span>" +
+        quickSettingsBar() +
+        "</div>" +
+        (state.editing ? "" : progress()) +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>' +
+        esc(STEP_META[id].title) +
+        "</h1>" +
+        "</div>" +
+        '<div class="scr-body">' +
+        body +
+        "</div>" +
+        '<div class="scr-footer">' +
+        footer +
+        "</div>" +
+        "</div>"
+      );
+    }
+
+    function radioCard(name, value, current, title, sub, iconName) {
+      var checked = current === value;
+      return (
+        '<button type="button" class="choice-card" role="radio" aria-checked="' +
+        checked +
+        '" data-radio="' +
+        name +
+        '" data-value="' +
+        value +
+        '" id="opt-' +
+        name +
+        "-" +
+        value +
+        '">' +
+        '<span class="choice-body"><span class="choice-title">' +
+        (iconName ? icon(iconName) : "") +
+        " " +
+        esc(title) +
+        (checked ? icon("check", "choice-check-badge") : "") +
+        "</span>" +
+        (sub ? '<span class="choice-sub">' + sub + "</span>" : "") +
+        "</span>" +
+        "</button>"
+      );
+    }
+    function checkCard(name, value, list, title, sub, iconName) {
+      var checked = list.indexOf(value) > -1;
+      return (
+        '<button type="button" class="choice-card" role="checkbox" aria-checked="' +
+        checked +
+        '" data-check="' +
+        name +
+        '" data-value="' +
+        value +
+        '" id="opt-' +
+        name +
+        "-" +
+        value +
+        '">' +
+        '<span class="choice-body"><span class="choice-title">' +
+        (iconName ? icon(iconName) : "") +
+        " " +
+        esc(title) +
+        (checked ? icon("check", "choice-check-badge") : "") +
+        "</span>" +
+        (sub ? '<span class="choice-sub">' + sub + "</span>" : "") +
+        "</span>" +
+        "</button>"
+      );
+    }
+
+    /* ---- welcome ---- */
+    function rWelcome() {
+      var body =
+        '<div class="surface" style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:14px; text-align:left;">' +
+        '<div style="display:flex; align-items:center; gap:14px;">' +
+        '<div class="hero-thumb" style="width:64px;height:64px;background:var(--app-accent-soft); color:var(--app-accent);">' +
+        icon("calendar") +
+        "</div>" +
+        '<div><p class="scr-explain" style="margin:0;">Let’s set the app up the way that works best for you. It takes a few minutes, one question per screen, and you can change any answer later in Settings.</p></div>' +
+        "</div>" +
+        '<ul style="margin:0; padding-left:0; list-style:none; display:grid; gap:10px;">' +
+        '<li class="surface-2" style="display:flex; gap:10px; align-items:center;">' +
+        icon("check", null) +
+        "<span>One choice per screen — nothing crowded</span></li>" +
+        '<li class="surface-2" style="display:flex; gap:10px; align-items:center;">' +
+        icon("check", null) +
+        "<span>Your answers apply immediately, so you can see them take effect</span></li>" +
+        '<li class="surface-2" style="display:flex; gap:10px; align-items:center;">' +
+        icon("check", null) +
+        "<span>Nothing here is permanent — edit anything later in Settings</span></li>" +
+        "</ul>" +
+        "</div>";
+      var footer =
+        '<div></div><button class="btn btn-primary" id="navNext"><span>Get Started</span>' +
+        icon("chevronRight") +
+        "</button>";
+      return wizardShell("welcome", body, footer);
+    }
+
+    /* ---- buttons ---- */
+    function rButtons() {
+      var explain =
+        '<p class="scr-explain">Choose how buttons should look and feel throughout the app. This updates the buttons on this screen right away.</p>';
+      var opts = [
+        [
+          "large-icon",
+          "Large, with icons and text",
+          "Bigger touch area, icon plus label",
+        ],
+        ["large-text", "Large, text only", "Bigger touch area, label only"],
+        [
+          "standard-icon",
+          "Standard, with icons and text",
+          "Compact size, icon plus label",
+        ],
+        ["standard-text", "Standard, text only", "Compact size, label only"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Button size and style" style="grid-template-columns:repeat(2,1fr); flex:1; align-content:start;">' +
+        opts
+          .map(function (o) {
+            return radioCard(
+              "buttonStyle",
+              o[0],
+              state.buttonStyle,
+              o[1],
+              o[2],
+              o[0].indexOf("icon") > -1 ? "settings" : null,
+            );
+          })
+          .join("") +
+        "</div>" +
+        '<div class="surface-2" style="margin-top:12px;"><p style="margin:0 0 10px; font-weight:700; font-size:.85em; text-transform:uppercase; letter-spacing:.04em; color:var(--app-muted);">Live preview</p>' +
+        '<div style="display:flex; gap:12px; flex-wrap:wrap;"><button class="btn btn-primary" type="button">' +
+        iconSlot("calendar") +
+        "<span>Register for Event</span></button>" +
+        '<button class="btn" type="button">' +
+        iconSlot("pin") +
+        "<span>View Location</span></button></div></div>";
+      return wizardShell("buttons", body, footerNav({}));
+    }
+
+    /* ---- audio ---- */
+    function rAudio() {
+      var explain =
+        '<p class="scr-explain">How would you like the app to read information aloud?</p>';
+      var opts = [
+        [
+          "important",
+          "Read important information aloud",
+          "Titles, times, cost and safety details",
+        ],
+        [
+          "everything",
+          "Read everything aloud",
+          "All text on every screen, when you press play",
+        ],
+        [
+          "none",
+          "Do not read information aloud",
+          "Text stays fully visible either way",
+        ],
+        [
+          "ios",
+          "Use my iPad settings",
+          "Follow VoiceOver / Spoken Content automatically",
+        ],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Audio support" style="grid-template-columns:repeat(2,1fr);">' +
+        opts
+          .map(function (o) {
+            return radioCard(
+              "audioMode",
+              o[0],
+              state.audioMode,
+              o[1],
+              o[2],
+              "speaker",
+            );
+          })
+          .join("") +
+        '</div><div style="margin-top:12px;">' +
+        speechControls(
+          "This is an example of the app reading information aloud. Registration closes one hour before the event begins.",
+          "Hear an Example",
+        ) +
+        "</div>";
+      return wizardShell("audio", body, footerNav({}));
+    }
+
+    /* ---- color ---- */
+    function rColor() {
+      var explain =
+        '<p class="scr-explain">Choose colours and contrast. Every option pairs colour with icons, borders and labels — never colour alone.</p>';
+      var modes = [
+        [
+          "ios",
+          "Use my iPad settings",
+          "Matches your iPad’s light or dark display setting",
+        ],
+        ["standard", "Standard colour", "Warm, soft colour palette"],
+        [
+          "high-contrast",
+          "High-contrast colour",
+          "Bold colour on a black background",
+        ],
+        ["bw", "Black & white", "Grayscale with patterned emphasis"],
+      ];
+      var swatch = {
+        ios: "linear-gradient(135deg,#119EC4,#D10074)",
+        standard: "linear-gradient(135deg,#119EC4,#D10074)",
+        "high-contrast": "linear-gradient(135deg,#000,#FFD60A)",
+        bw: "linear-gradient(135deg,#000,#fff)",
+      };
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Colour and contrast mode" style="grid-template-columns:repeat(2,1fr);">' +
+        modes
+          .map(function (o) {
+            var checked = state.colorMode === o[0];
+            return (
+              '<button type="button" class="choice-card" role="radio" aria-checked="' +
+              checked +
+              '" data-radio="colorMode" data-value="' +
+              o[0] +
+              '" id="opt-colorMode-' +
+              o[0] +
+              '">' +
+              '<span style="width:34px;height:34px;border-radius:10px;flex:none;background:' +
+              swatch[o[0]] +
+              ';border:1px solid var(--app-border);"></span>' +
+              '<span class="choice-body"><span class="choice-title">' +
+              esc(o[1]) +
+              (checked ? " " + icon("check") : "") +
+              '</span><span class="choice-sub">' +
+              o[2] +
+              "</span></span></button>"
+            );
+          })
+          .join("") +
+        "</div>";
+      return wizardShell("color", body, footerNav({}));
+    }
+
+    /* ---- complexity ---- */
+    function rComplexity() {
+      var explain =
+        '<p class="scr-explain">How much information would you like to read? This is the same event shown three ways.</p>';
+      var sample = {
+        when: "Today",
+        time: "2:00 PM",
+        location: "Community Centre",
+      };
+      var texts = {
+        key: "Art class · Today 2:00 PM · Community Centre",
+        short:
+          "Join an art class today. It starts at 2:00 PM. It is at the Community Centre.",
+        full: "Join us for an accessible art class at the Community Centre today. The class begins at 2:00 PM, and all materials will be provided.",
+      };
+      var opts = [
+        ["key", "Key information only"],
+        ["short", "Short sentences"],
+        ["full", "Full sentences"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Sentence complexity">' +
+        opts
+          .map(function (o) {
+            var checked = state.complexity === o[0];
+            return (
+              '<button type="button" class="choice-card" role="radio" aria-checked="' +
+              checked +
+              '" data-radio="complexity" data-value="' +
+              o[0] +
+              '" id="opt-complexity-' +
+              o[0] +
+              '" style="align-items:flex-start;">' +
+              '<span class="choice-body"><span class="choice-title">' +
+              esc(o[1]) +
+              (checked ? icon("check", "choice-check-badge") : "") +
+              "</span>" +
+              '<span class="choice-sub" style="display:block; margin-top:6px; padding:10px 12px; background:var(--app-surface-2); border-radius:10px; color:var(--app-ink); font-style:normal;">' +
+              esc(texts[o[0]]) +
+              "</span></span></button>"
+            );
+          })
+          .join("") +
+        "</div>" +
+        '<p style="font-size:.85em; color:var(--app-muted); margin-top:10px;">Important details — cost, cancellation, transportation, safety and accessibility — are always included, at every level.</p>';
+      return wizardShell("complexity", body, footerNav({}));
+    }
+
+    /* ---- browsing style ---- */
+    function rBrowsing() {
+      var explain =
+        '<p class="scr-explain">Choose how you’d like to look through events.</p>';
+      var opts = [
+        [
+          "single",
+          "One Event at a Time",
+          "A large card for each event, with Previous and Next",
+        ],
+        [
+          "grid",
+          "Multiple Events Per Page",
+          "A small grid of events with page controls",
+        ],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Browsing style" style="grid-template-columns:repeat(2,1fr); flex:1;">' +
+        opts
+          .map(function (o) {
+            var checked = state.browsing === o[0];
+            var mock =
+              o[0] === "single"
+                ? '<div style="display:flex; gap:6px; align-items:center;"><div style="width:34px;height:26px;border-radius:6px;background:var(--app-accent-soft);"></div><div style="flex:1;height:26px;border-radius:6px;background:var(--app-surface-2);"></div></div>'
+                : '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;"><div style="height:26px;border-radius:6px;background:var(--app-accent-soft);"></div><div style="height:26px;border-radius:6px;background:var(--app-surface-2);"></div><div style="height:26px;border-radius:6px;background:var(--app-surface-2);"></div><div style="height:26px;border-radius:6px;background:var(--app-surface-2);"></div></div>';
+            return (
+              '<button type="button" class="choice-card" role="radio" aria-checked="' +
+              checked +
+              '" data-radio="browsing" data-value="' +
+              o[0] +
+              '" id="opt-browsing-' +
+              o[0] +
+              '" style="flex-direction:column; align-items:stretch;">' +
+              '<span class="choice-title" style="justify-content:space-between; width:100%; display:flex;">' +
+              esc(o[1]) +
+              (checked ? icon("check") : "") +
+              "</span>" +
+              '<span class="choice-sub" style="margin:8px 0;">' +
+              o[2] +
+              "</span>" +
+              mock +
+              "</button>"
+            );
+          })
+          .join("") +
+        "</div>";
+      return wizardShell("browsing", body, footerNav({}));
+    }
+
+    /* ---- cost ---- */
+    function rCost() {
+      var explain =
+        '<p class="scr-explain">Which events would you like to see?</p>';
+      var opts = [
+        ["free", "Free events only"],
+        ["free-paid", "Free and paid events"],
+        ["no-pref", "No preference"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Event cost preference">' +
+        opts
+          .map(function (o) {
+            return radioCard(
+              "costPref",
+              o[0],
+              state.costPref,
+              o[1],
+              null,
+              "tag",
+            );
+          })
+          .join("") +
+        "</div>" +
+        '<p style="font-size:.85em; color:var(--app-muted); margin-top:10px;">Cost is always shown before you register, no matter what you choose here.</p>';
+      return wizardShell("cost", body, footerNav({}));
+    }
+
+    /* ---- location ---- */
+    function rLocation() {
+      var explain =
+        '<p class="scr-explain">Sharing your location helps show nearby events. This is never required, and precise location is never needed.</p>';
+      var opts = [
+        ["current", "Use my current location"],
+        ["saved", "Use a saved location"],
+        ["entered", "Enter a neighbourhood, city, or postal code"],
+        ["none", "Do not use my location"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Location">' +
+        opts
+          .map(function (o) {
+            return radioCard(
+              "locationMode",
+              o[0],
+              state.locationMode,
+              o[1],
+              null,
+              "pin",
+            );
+          })
+          .join("") +
+        "</div>" +
+        (state.locationMode === "entered"
+          ? '<div class="surface-2" style="margin-top:12px;"><label for="locInput" style="font-weight:700; font-size:.9em; display:block; margin-bottom:8px;">Neighbourhood, city, or postal code</label><input id="locInput" type="text" value="' +
+            esc(state.locationValue) +
+            '" placeholder="e.g. Riverside" style="width:100%; font-size:1rem; padding:12px 14px; border-radius:12px; border:var(--app-border-w) solid var(--app-border); background:var(--app-surface); color:var(--app-ink);" /></div>'
+          : "");
+      return wizardShell("location", body, footerNav({}));
+    }
+
+    /* ---- transport ---- */
+    function rTransport() {
+      var explain =
+        '<p class="scr-explain">Select every way you might get to an event. You can pick more than one.</p>';
+      var opts = [
+        ["walk", "Walking or mobility device", "walk"],
+        ["transit", "Public transit", "bus"],
+        ["car", "Car", "car"],
+        ["accessible", "Accessible transportation service", "bus"],
+        ["bike", "Bicycle", "bike"],
+        ["driven", "Someone drives me", "driven"],
+        ["other", "Other", "other"],
+        ["unsure", "I am not sure", "question"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="group" aria-label="Transportation" style="grid-template-columns:repeat(2,1fr);">' +
+        opts
+          .map(function (o) {
+            return checkCard(
+              "transport",
+              o[0],
+              state.transport,
+              o[1],
+              null,
+              o[2],
+            );
+          })
+          .join("") +
+        "</div>";
+      return wizardShell("transport", body, footerNav({}));
+    }
+
+    /* ---- travel time ---- */
+    function rTravel() {
+      var explain =
+        '<p class="scr-explain">How long are you willing to travel to reach an event?</p>';
+      var opts = [
+        ["up10", "Up to 10 minutes"],
+        ["up20", "Up to 20 minutes"],
+        ["up30", "Up to 30 minutes"],
+        ["up60", "Up to 60 minutes"],
+        ["all", "Show all travel times"],
+        ["unsure", "I am not sure"],
+      ];
+      var body =
+        explain +
+        '<div class="choice-grid" role="radiogroup" aria-label="Travel time" style="grid-template-columns:repeat(2,1fr);">' +
+        opts
+          .map(function (o) {
+            return radioCard(
+              "travelTime",
+              o[0],
+              state.travelTime,
+              o[1],
+              null,
+              "clock",
+            );
+          })
+          .join("") +
+        "</div>" +
+        '<p style="font-size:.85em; color:var(--app-muted); margin-top:10px;">We use travel time, not straight-line distance, and never assume the shortest route is the most accessible one.</p>';
+      return wizardShell("travel", body, footerNav({}));
+    }
+
+    /* ---- accessibility needs (split across two shorter pages) ---- */
+    function rNeeds1() {
+      var explain =
+        '<p class="scr-explain">What support would make an event work better for you? Choose as many as apply — these are support needs, not medical information.</p>';
+      var body =
+        explain +
+        '<div class="choice-grid" role="group" aria-label="Accessibility preferences, page 1" style="grid-template-columns:repeat(3,1fr);">' +
+        NEED_GROUP_1.map(function (k) {
+          return checkCard(
+            "needs",
+            k,
+            state.needs,
+            FEATURE_META[k].label,
+            null,
+            FEATURE_META[k].icon,
+          );
+        }).join("") +
+        "</div>";
+      return wizardShell("needs1", body, footerNav({}));
+    }
+    function rNeeds2() {
+      var explain =
+        '<p class="scr-explain">A few more supports — or let us know none apply, or that you’d rather not say.</p>';
+      var body =
+        explain +
+        '<div class="choice-grid" role="group" aria-label="Accessibility preferences, page 2" style="grid-template-columns:repeat(3,1fr);">' +
+        NEED_GROUP_2.map(function (k) {
+          if (k === "other")
+            return checkCard(
+              "needs",
+              "other",
+              state.needs,
+              "Other",
+              null,
+              "other",
+            );
+          return checkCard(
+            "needs",
+            k,
+            state.needs,
+            FEATURE_META[k].label,
+            null,
+            FEATURE_META[k].icon,
+          );
+        }).join("") +
+        checkCard(
+          "needs",
+          "no-pref",
+          state.needs,
+          "No preference",
+          null,
+          "check",
+        ) +
+        checkCard(
+          "needs",
+          "prefer-not",
+          state.needs,
+          "Prefer not to answer",
+          null,
+          "other",
+        ) +
+        "</div>";
+      return wizardShell(
+        "needs2",
+        body,
+        footerNav({ nextLabel: "Continue to Preview" }),
+      );
+    }
+
+    /* ---- preview ---- */
+    var PREVIEW_PAGES = [
+      "Home & Filters",
+      "Event Card",
+      "Event Details",
+      "Registration",
+    ];
+    function previewFrame(inner, pageIdx) {
+      var body =
+        '<div class="surface" style="flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; padding:12px;">' +
+        '<div style="font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--app-muted); margin-bottom:8px;">Preview · ' +
+        esc(PREVIEW_PAGES[pageIdx]) +
+        "</div>" +
+        '<div style="flex:1; min-height:0; overflow:hidden; border-radius:14px; border:var(--app-border-w) dashed var(--app-border); padding:14px; display:flex; flex-direction:column;">' +
+        inner +
+        "</div>" +
+        "</div>";
+      return body;
+    }
+    function mockEventCardHTML(ev) {
+      var tone = THUMB_TONE[ev.cat];
+      var toneColors = [
+        "var(--app-accent-soft)",
+        "var(--app-accent-2-soft)",
+        "var(--app-surface-2)",
+      ];
+      return (
+        '<div class="event-card" style="cursor:default;">' +
+        '<div class="event-thumb" style="background:' +
+        toneColors[tone] +
+        '; color:var(--app-accent);">' +
+        icon(CATS[ev.cat].icon) +
+        "</div>" +
+        "<div><h3>" +
+        esc(ev.title) +
+        '</h3><p style="margin:4px 0; color:var(--app-muted); font-size:.92em;">' +
+        esc(complexityText(ev, state.complexity)) +
+        "</p>" +
+        '<div class="event-meta"><span>' +
+        icon("clock") +
+        " " +
+        ev.whenLabel +
+        ", " +
+        ev.time +
+        "</span><span>" +
+        icon("pin") +
+        " " +
+        ev.minutes +
+        " min away</span>" +
+        '<span class="chip ' +
+        (ev.cost === 0 ? "tag-free" : "") +
+        '">' +
+        (ev.cost === 0 ? "Free" : "$" + ev.cost) +
+        "</span></div></div></div>"
+      );
+    }
+    function rPreview() {
+      var page = state.previewPage;
+      var inner;
+      if (page === 0) {
+        inner =
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">' +
+          "<strong>Today · This Week</strong>" +
+          '<span class="chip on">' +
+          icon("filter") +
+          " " +
+          esc(CATS[state.filters.activities[0] || "art"].label) +
+          "</span></div>" +
+          '<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1; min-height:0;">' +
+          EVENTS.slice(0, 4).map(mockEventCardHTML).join("") +
+          "</div>";
+      } else if (page === 1) {
+        var ev = EVENTS[0];
+        inner =
+          '<div class="hero-card" style="grid-template-columns:38% 1fr;">' +
+          '<div class="hero-thumb" style="background:var(--app-accent-soft); color:var(--app-accent); height:100%;">' +
+          icon(CATS[ev.cat].icon) +
+          "</div>" +
+          '<div class="hero-info"><h3 style="margin:0; font-size:1.2em;">' +
+          esc(ev.title) +
+          "</h3>" +
+          '<p style="margin:0; color:var(--app-muted);">' +
+          esc(complexityText(ev, state.complexity)) +
+          "</p>" +
+          '<div class="a11y-badge-row">' +
+          ev.features
+            .slice(0, 3)
+            .map(function (f) {
+              return (
+                '<span class="a11y-badge confirmed">' +
+                icon(FEATURE_META[f].icon) +
+                " " +
+                FEATURE_META[f].label +
+                "</span>"
+              );
+            })
+            .join("") +
+          "</div>" +
+          '<button class="btn btn-primary" style="align-self:flex-start; margin-top:auto;">' +
+          iconSlot("calendar") +
+          "<span>Register</span></button></div></div>";
+      } else if (page === 2) {
+        var ev2 = EVENTS[3];
+        inner =
+          '<h3 style="margin:0 0 6px;">' +
+          esc(ev2.title) +
+          '</h3><p style="color:var(--app-muted); margin:0 0 10px;">' +
+          esc(complexityText(ev2, state.complexity)) +
+          "</p>" +
+          '<div class="a11y-badge-row" style="margin-bottom:10px;">' +
+          ev2.features
+            .map(function (f) {
+              return (
+                '<span class="a11y-badge confirmed">' +
+                icon(FEATURE_META[f].icon) +
+                " " +
+                FEATURE_META[f].label +
+                "</span>"
+              );
+            })
+            .join("") +
+          ev2.notProvided
+            .map(function (f) {
+              return (
+                '<span class="a11y-badge unknown">' +
+                icon(FEATURE_META[f].icon) +
+                " " +
+                FEATURE_META[f].label +
+                " — not provided</span>"
+              );
+            })
+            .join("") +
+          '</div><p style="font-weight:700; margin:0;">' +
+          costText(ev2, state.complexity) +
+          "</p>";
+      } else {
+        inner =
+          '<div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;">' +
+          '<div style="width:56px;height:56px;border-radius:50%;background:var(--app-success); color:#fff; display:flex; align-items:center; justify-content:center;">' +
+          icon("check") +
+          "</div>" +
+          '<h3 style="margin:0;">You’re registered</h3><p style="color:var(--app-muted); margin:0; max-width:38ch;">' +
+          (state.complexity === "key"
+            ? "Adaptive Basketball League · Thu 5:00 PM"
+            : "A confirmation for the Adaptive Basketball League has been saved. We will see you Thursday at 5:00 PM.") +
+          "</p></div>";
+      }
+      var explain =
+        '<p class="scr-explain">Here’s a realistic look at the app with your choices applied.</p>';
+      var body = explain + previewFrame(inner, page);
+      var footer =
+        '<button class="btn" id="prevPreview" ' +
+        (page === 0 ? "disabled" : "") +
+        ">" +
+        icon("chevronLeft") +
+        "<span>Previous Preview</span></button>" +
+        '<div class="pager-status">Preview ' +
+        (page + 1) +
+        " of " +
+        PREVIEW_PAGES.length +
+        "</div>" +
+        (page < PREVIEW_PAGES.length - 1
+          ? '<button class="btn btn-primary" id="nextPreview"><span>Next Preview</span>' +
+            icon("chevronRight") +
+            "</button>"
+          : '<div style="display:flex; gap:10px;"><button class="btn btn-danger-outline" id="editChoices">' +
+            icon("chevronLeft") +
+            '<span>Edit My Choices</span></button><button class="btn btn-primary" id="looksGood">' +
+            icon("check") +
+            "<span>Looks Good</span></button></div>");
+      return wizardShell("preview", body, footer);
+    }
+
+    function renderOnbStep() {
+      var id = ONB_STEPS[state.step];
+      var map = {
+        welcome: rWelcome,
+        buttons: rButtons,
+        audio: rAudio,
+        color: rColor,
+        complexity: rComplexity,
+        browsing: rBrowsing,
+        cost: rCost,
+        location: rLocation,
+        transport: rTransport,
+        travel: rTravel,
+        needs1: rNeeds1,
+        needs2: rNeeds2,
+        preview: rPreview,
+      };
+      return map[id]();
+    }
+
+    /* ============================= MAIN APP: BROWSE ============================= */
+    function filteredEvents() {
+      var rank = { today: 0, week: 1, month: 2, upcoming: 3 };
+      var tf = state.filters.time;
+      return EVENTS.filter(function (ev) {
+        if (tf && rank[ev.when] > rank[tf]) return false;
+        if (
+          state.filters.activities.length &&
+          state.filters.activities.indexOf(ev.cat) === -1
+        )
+          return false;
+        if (state.costPref === "free" && ev.cost > 0) return false;
+        return true;
+      });
+    }
+    function activeFilterChips() {
+      var chips = [];
+      var timeLabels = {
+        today: "Today",
+        week: "This Week",
+        month: "This Month",
+        upcoming: "All Upcoming",
+      };
+      chips.push(
+        '<span class="chip on">' +
+          icon("clock") +
+          " " +
+          timeLabels[state.filters.time] +
+          "</span>",
+      );
+      state.filters.activities.forEach(function (a) {
+        chips.push(
+          '<span class="chip on">' +
+            icon(CATS[a].icon) +
+            " " +
+            CATS[a].label +
+            "</span>",
+        );
+      });
+      return chips.join("");
+    }
+    function rBrowseHeader(title, extra) {
+      return (
+        '<div class="scr-header"><div class="eyebrow-row"><span class="step-pill">' +
+        icon("home") +
+        " Access Events</span>" +
+        '<div class="top-actions">' +
+        '<button class="btn btn-sm" id="qsAa" aria-label="Text size, currently ' +
+        state.textSize +
+        '">' +
+        icon("aa") +
+        "<span>&nbsp;Text Size</span></button>" +
+        '<button class="btn btn-sm" id="goSettings">' +
+        icon("settings") +
+        "<span>&nbsp;Settings</span></button>" +
+        '<button class="btn btn-sm" id="qsHelp">' +
+        icon("help") +
+        "<span>&nbsp;Help</span></button>" +
+        "</div></div>" +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>' +
+        esc(title) +
+        "</h1>" +
+        (extra || "") +
+        "</div>"
+      );
+    }
+    function rBrowse() {
+      var events = filteredEvents();
+      var header = rBrowseHeader(
+        "Find an Event",
+        '<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:4px;">' +
+          activeFilterChips() +
+          '<button class="btn btn-sm" id="openFilters">' +
+          icon("filter") +
+          "<span>Filters</span></button>" +
+          (state.filters.activities.length
+            ? '<button class="btn btn-sm btn-ghost" id="clearFilters">' +
+              icon("clear") +
+              "<span>Clear Filters</span></button>"
+            : "") +
+          "</div>",
+      );
+      var body, footer;
+      if (state.browsing === "single") {
+        var idx = Math.min(state.browsePage, Math.max(0, events.length - 1));
+        var ev = events[idx];
+        if (!ev) {
+          body =
+            '<div class="surface" style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--app-muted);">No events match your filters yet.</div>';
+          footer =
+            '<div></div><div class="pager-status">0 of 0</div><div></div>';
+        } else {
+          var tone = THUMB_TONE[ev.cat];
+          var toneColors = [
+            "var(--app-accent-soft)",
+            "var(--app-accent-2-soft)",
+            "var(--app-surface-2)",
+          ];
+          body =
+            '<div class="hero-card">' +
+            '<div class="hero-thumb" style="background:' +
+            toneColors[tone] +
+            '; color:var(--app-accent);">' +
+            icon(CATS[ev.cat].icon, null) +
+            "</div>" +
+            '<div class="hero-info">' +
+            '<span class="chip">' +
+            icon(CATS[ev.cat].icon) +
+            " " +
+            CATS[ev.cat].label +
+            "</span>" +
+            '<h2 style="margin:2px 0;">' +
+            esc(ev.title) +
+            "</h2>" +
+            '<p style="margin:0; color:var(--app-muted);">' +
+            esc(complexityText(ev, state.complexity)) +
+            "</p>" +
+            '<div class="event-meta" style="font-size:.95em;"><span>' +
+            icon("clock") +
+            " " +
+            ev.whenLabel +
+            ", " +
+            ev.time +
+            "</span><span>" +
+            icon("pin") +
+            " " +
+            ev.location +
+            " · " +
+            ev.minutes +
+            " min</span></div>" +
+            '<div class="a11y-badge-row">' +
+            ev.features
+              .slice(0, 4)
+              .map(function (f) {
+                return (
+                  '<span class="a11y-badge confirmed">' +
+                  icon(FEATURE_META[f].icon) +
+                  " " +
+                  FEATURE_META[f].label +
+                  "</span>"
+                );
+              })
+              .join("") +
+            "</div>" +
+            '<div style="margin-top:auto; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">' +
+            '<span class="chip ' +
+            (ev.cost === 0 ? "tag-free" : "") +
+            '" style="font-size:.95rem;">' +
+            (ev.cost === 0 ? "Free" : "$" + ev.cost) +
+            "</span>" +
+            '<button class="btn btn-primary" id="viewEvent" data-id="' +
+            ev.id +
+            '">' +
+            iconSlot("calendar") +
+            "<span>Register or View Event</span></button>" +
+            '<button class="btn btn-ghost btn-sm" id="skipEvent">Skip</button>' +
+            "</div>" +
+            "</div></div>";
+          footer =
+            '<button class="btn" id="prevEvent" ' +
+            (idx === 0 ? "disabled" : "") +
+            ">" +
+            icon("chevronLeft") +
+            "<span>Previous Event</span></button>" +
+            '<div class="pager-status">Event ' +
+            (idx + 1) +
+            " of " +
+            events.length +
+            "</div>" +
+            '<button class="btn btn-primary" id="nextEvent" ' +
+            (idx >= events.length - 1 ? "disabled" : "") +
+            "><span>Next Event</span>" +
+            icon("chevronRight") +
+            "</button>";
+        }
+      } else {
+        var perPage = gridConfig();
+        var totalPages = Math.max(1, Math.ceil(events.length / perPage));
+        var page = Math.min(state.browsePage, totalPages - 1);
+        var start = page * perPage,
+          slice = events.slice(start, start + perPage);
+        var cols = orientation() === "landscape" ? Math.min(perPage, 2) : 1;
+        body = slice.length
+          ? '<div class="event-grid" style="grid-template-columns:repeat(' +
+            cols +
+            ",1fr); grid-template-rows:repeat(" +
+            Math.ceil(perPage / cols) +
+            ',1fr);">' +
+            slice
+              .map(function (ev) {
+                var tone = THUMB_TONE[ev.cat];
+                var toneColors = [
+                  "var(--app-accent-soft)",
+                  "var(--app-accent-2-soft)",
+                  "var(--app-surface-2)",
+                ];
+                return (
+                  '<button type="button" class="event-card" data-view="' +
+                  ev.id +
+                  '">' +
+                  '<span class="event-thumb" style="background:' +
+                  toneColors[tone] +
+                  '; color:var(--app-accent);">' +
+                  icon(CATS[ev.cat].icon) +
+                  "</span>" +
+                  '<span style="min-width:0;"><h3>' +
+                  esc(ev.title) +
+                  '</h3><span style="display:block; color:var(--app-muted); font-size:.88em;">' +
+                  esc(complexityText(ev, state.complexity)) +
+                  "</span>" +
+                  '<span class="event-meta"><span>' +
+                  icon("clock") +
+                  " " +
+                  ev.whenLabel +
+                  '</span><span class="chip ' +
+                  (ev.cost === 0 ? "tag-free" : "") +
+                  '">' +
+                  (ev.cost === 0 ? "Free" : "$" + ev.cost) +
+                  "</span></span></span></button>"
+                );
+              })
+              .join("") +
+            "</div>"
+          : '<div class="surface" style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; color:var(--app-muted);">No events match your filters yet.</div>';
+        footer =
+          '<button class="btn" id="prevPage" ' +
+          (page === 0 ? "disabled" : "") +
+          ">" +
+          icon("chevronLeft") +
+          "<span>Previous</span></button>" +
+          '<div class="pager-status">Events ' +
+          (events.length ? start + 1 : 0) +
+          "–" +
+          Math.min(start + perPage, events.length) +
+          " of " +
+          events.length +
+          "</div>" +
+          '<button class="btn btn-primary" id="nextPage" ' +
+          (page >= totalPages - 1 ? "disabled" : "") +
+          "><span>Next</span>" +
+          icon("chevronRight") +
+          "</button>";
+      }
+      return (
+        '<div class="screen">' +
+        header +
+        '<div class="scr-body">' +
+        body +
+        '</div><div class="scr-footer">' +
+        footer +
+        "</div></div>"
+      );
+    }
+
+    /* ---- filters (3-page flow) ---- */
+    function rFilters() {
+      var page = state.filterPage;
+      var titles = ["When?", "What kind of activity?", "Review your filters"];
+      var body, footer;
+      var draft =
+        state._filterDraft ||
+        (state._filterDraft = JSON.parse(JSON.stringify(state.filters)));
+      if (page === 0) {
+        var opts = [
+          ["today", "Today"],
+          ["week", "This Week"],
+          ["month", "This Month"],
+          ["upcoming", "All Upcoming"],
+        ];
+        body =
+          '<p class="scr-explain">Choose when you’d like events to happen.</p><div class="choice-grid" role="radiogroup" aria-label="Time filter" style="grid-template-columns:repeat(2,1fr);">' +
+          opts
+            .map(function (o) {
+              return radioCard(
+                "filterTime",
+                o[0],
+                draft.time,
+                o[1],
+                null,
+                "calendar",
+              );
+            })
+            .join("") +
+          "</div>";
+      } else if (page === 1) {
+        body =
+          '<p class="scr-explain">Choose one or more activity types. Leave blank to see everything.</p><div class="filter-grid activities" role="group" aria-label="Activity filters">' +
+          Object.keys(CATS)
+            .map(function (k) {
+              return checkCard(
+                "filterAct",
+                k,
+                draft.activities,
+                CATS[k].label,
+                null,
+                CATS[k].icon,
+              );
+            })
+            .join("") +
+          "</div>";
+      } else {
+        var timeLabels = {
+          today: "Today",
+          week: "This Week",
+          month: "This Month",
+          upcoming: "All Upcoming",
+        };
+        body =
+          '<p class="scr-explain">Review your filters, then apply them.</p>' +
+          '<div class="surface" style="display:flex; flex-direction:column; gap:14px;">' +
+          '<div><p style="font-weight:700; margin:0 0 6px;">When</p><span class="chip on">' +
+          icon("calendar") +
+          " " +
+          timeLabels[draft.time] +
+          "</span></div>" +
+          '<div><p style="font-weight:700; margin:0 0 6px;">Activities</p>' +
+          (draft.activities.length
+            ? draft.activities
+                .map(function (a) {
+                  return (
+                    '<span class="chip on" style="margin-right:6px;">' +
+                    icon(CATS[a].icon) +
+                    " " +
+                    CATS[a].label +
+                    "</span>"
+                  );
+                })
+                .join("")
+            : '<span class="chip">All activities</span>') +
+          "</div></div>";
+      }
+      var backLabel = page === 0 ? "Back to Events" : "Previous";
+      footer =
+        '<button class="btn" id="filterBack">' +
+        icon("chevronLeft") +
+        "<span>" +
+        backLabel +
+        "</span></button>" +
+        '<div class="pager-status">Filter Page ' +
+        (page + 1) +
+        " of 3</div>" +
+        (page < 2
+          ? '<button class="btn btn-primary" id="filterNext"><span>Next</span>' +
+            icon("chevronRight") +
+            "</button>"
+          : '<button class="btn btn-primary" id="applyFilters">' +
+            icon("check") +
+            "<span>Apply Filters</span></button>");
+      var header =
+        '<div class="scr-header"><div class="eyebrow-row"><span class="step-pill">Filter Page ' +
+        (page + 1) +
+        " of 3</span>" +
+        quickSettingsBar() +
+        "</div>" +
+        '<div class="progress-track"><div class="progress-fill" style="width:' +
+        Math.round(((page + 1) / 3) * 100) +
+        '%"></div></div>' +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>' +
+        titles[page] +
+        "</h1></div>";
+      return (
+        '<div class="screen">' +
+        header +
+        '<div class="scr-body">' +
+        body +
+        '</div><div class="scr-footer">' +
+        footer +
+        "</div></div>"
+      );
+    }
+
+    /* ---- event details ---- */
+    function rDetails() {
+      var ev =
+        EVENTS.filter(function (e) {
+          return e.id === state.activeEventId;
+        })[0] || EVENTS[0];
+      var header =
+        '<div class="scr-header"><div class="eyebrow-row"><span class="step-pill">Event Details</span>' +
+        quickSettingsBar() +
+        "</div>" +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>' +
+        esc(ev.title) +
+        "</h1></div>";
+      var confirmed = ev.features,
+        notProvided = ev.notProvided,
+        contact = ev.contact;
+      var body =
+        '<div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; flex:1; min-height:0; overflow:hidden;">' +
+        '<div class="surface" style="overflow:hidden; display:flex; flex-direction:column; gap:10px;">' +
+        speechControls(complexityText(ev, "full"), "Hear this event") +
+        '<p style="margin:0; line-height:1.55;">' +
+        esc(complexityText(ev, state.complexity)) +
+        "</p>" +
+        '<div class="event-meta" style="font-size:1em; gap:12px;"><span>' +
+        icon("calendar") +
+        " " +
+        ev.whenLabel +
+        "</span><span>" +
+        icon("clock") +
+        " " +
+        ev.time +
+        "</span><span>" +
+        icon("pin") +
+        " " +
+        ev.location +
+        "</span></div>" +
+        '<p style="font-weight:700; font-size:1.1em; margin:6px 0 0;">' +
+        costText(ev, state.complexity) +
+        "</p>" +
+        "</div>" +
+        '<div class="surface" style="overflow:hidden; display:flex; flex-direction:column; gap:10px;">' +
+        '<p style="font-weight:700; margin:0; font-size:.85em; text-transform:uppercase; letter-spacing:.04em; color:var(--app-muted);">Accessibility information</p>' +
+        '<div class="a11y-badge-row">' +
+        confirmed
+          .map(function (f) {
+            return (
+              '<span class="a11y-badge confirmed">' +
+              icon(FEATURE_META[f].icon) +
+              " " +
+              FEATURE_META[f].label +
+              "</span>"
+            );
+          })
+          .join("") +
+        notProvided
+          .map(function (f) {
+            return (
+              '<span class="a11y-badge unknown">' +
+              icon(FEATURE_META[f].icon) +
+              " " +
+              FEATURE_META[f].label +
+              " — not provided</span>"
+            );
+          })
+          .join("") +
+        (contact.length
+          ? '<span class="a11y-badge contact">' +
+            icon("question") +
+            " Contact organizer for more details</span>"
+          : "") +
+        "</div>" +
+        "</div></div>";
+      var footer =
+        '<button class="btn" id="backToBrowse">' +
+        icon("chevronLeft") +
+        "<span>Back</span></button><div></div>" +
+        '<button class="btn btn-primary" id="doRegister" data-id="' +
+        ev.id +
+        '">' +
+        iconSlot("check") +
+        "<span>Register</span></button>";
+      return (
+        '<div class="screen">' +
+        header +
+        '<div class="scr-body">' +
+        body +
+        '</div><div class="scr-footer">' +
+        footer +
+        "</div></div>"
+      );
+    }
+
+    /* ---- registration confirmation ---- */
+    function rRegister() {
+      var ev =
+        EVENTS.filter(function (e) {
+          return e.id === state.activeEventId;
+        })[0] || EVENTS[0];
+      var header =
+        '<div class="scr-header"><div class="eyebrow-row"><span class="step-pill">Registration</span>' +
+        quickSettingsBar() +
+        "</div>" +
+        '<h1 class="scr-title" tabindex="-1" data-autofocus>You’re Registered</h1></div>';
+      var msg =
+        state.complexity === "key"
+          ? ev.title + " · " + ev.whenLabel + " " + ev.time
+          : state.complexity === "short"
+            ? "You are registered for " +
+              ev.title +
+              ". It is on " +
+              ev.whenLabel.toLowerCase() +
+              " at " +
+              ev.time +
+              "."
+            : "You are registered for " +
+              ev.title +
+              ". We look forward to seeing you " +
+              ev.whenLabel.toLowerCase() +
+              " at " +
+              ev.time +
+              " at " +
+              ev.location +
+              ". A reminder will be sent before the event.";
+      var body =
+        '<div class="surface" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center;">' +
+        '<div style="width:64px;height:64px;border-radius:50%;background:var(--app-success); color:#fff; display:flex; align-items:center; justify-content:center;">' +
+        icon("check") +
+        "</div>" +
+        '<p style="max-width:44ch; font-size:1.1em; line-height:1.6; margin:0;">' +
+        esc(msg) +
+        "</p>" +
+        speechControls(msg, "Hear confirmation") +
+        "</div>";
+      var footer =
+        '<button class="btn" id="regBackDetails">' +
+        icon("chevronLeft") +
+        "<span>Back to Event</span></button><div></div>" +
+        '<button class="btn btn-primary" id="regDone">' +
+        icon("home") +
+        "<span>Back to Events</span></button>";
+      return (
+        '<div class="screen">' +
+        header +
+        '<div class="scr-body">' +
+        body +
+        '</div><div class="scr-footer">' +
+        footer +
+        "</div></div>"
+      );
+    }
+
+    /* ---- settings ---- */
+    var SETTINGS_ROWS = [
+      {
+        group: "Interface",
+        items: [
+          ["buttons", "Button size & style"],
+          ["audio", "Audio support"],
+          ["color", "Colour & contrast"],
+          ["complexity", "Sentence complexity"],
+        ],
+      },
+      { group: "Browsing", items: [["browsing", "Event browsing layout"]] },
+      {
+        group: "Event Preferences",
+        items: [
+          ["cost", "Event cost"],
+          ["location", "Location"],
+          ["transport", "Transportation"],
+          ["travel", "Travel time"],
+          ["needs1", "Accessibility preferences"],
+        ],
+      },
+    ];
+    function rSettings() {
+      var header = rBrowseHeader("Settings");
+      var body =
+        '<div style="display:flex; flex-direction:column; gap:16px; overflow:hidden;">' +
+        SETTINGS_ROWS.map(function (g) {
+          return (
+            '<div><p style="font-weight:700; font-size:.82em; text-transform:uppercase; letter-spacing:.05em; color:var(--app-muted); margin:0 0 8px;">' +
+            g.group +
+            "</p>" +
+            '<div class="surface" style="padding:6px; display:flex; flex-direction:column; gap:4px;">' +
+            g.items
+              .map(function (it) {
+                return (
+                  '<button type="button" class="btn btn-block btn-ghost" data-edit="' +
+                  it[0] +
+                  '" style="justify-content:space-between;"><span>' +
+                  it[1] +
+                  "</span>" +
+                  icon("chevronRight") +
+                  "</button>"
+                );
+              })
+              .join("") +
+            "</div></div>"
+          );
+        }).join("") +
+        "</div>";
+      var footer =
+        '<button class="btn" id="settingsBack">' +
+        icon("chevronLeft") +
+        "<span>Back to Events</span></button><div></div><div></div>";
+      return (
+        '<div class="screen">' +
+        header +
+        '<div class="scr-body">' +
+        body +
+        '</div><div class="scr-footer">' +
+        footer +
+        "</div></div>"
+      );
+    }
+
+    /* ============================= ROUTER ============================= */
+    function renderScreen() {
+      if (state.helpOpen) return renderHelpOverlay();
+      switch (state.screen) {
+        case "onb":
+          return renderOnbStep();
+        case "browse":
+          return rBrowse();
+        case "filters":
+          return rFilters();
+        case "details":
+          return rDetails();
+        case "register":
+          return rRegister();
+        case "settings":
+          return rSettings();
+        default:
+          return rBrowse();
+      }
+    }
+
+    /* ============================= WIRING ============================= */
+    function wireScreen(app) {
+      // radios
+      on(app, "[data-radio]", "click", function (e) {
+        var name = e.currentTarget.getAttribute("data-radio"),
+          val = e.currentTarget.getAttribute("data-value");
+        if (name === "filterTime") {
+          state._filterDraft.time = val;
+          render(false);
+          return;
+        }
+        var patch = {};
+        patch[name] = val;
+        update(patch);
+      });
+      on(app, "[data-check]", "click", function (e) {
+        var name = e.currentTarget.getAttribute("data-check"),
+          val = e.currentTarget.getAttribute("data-value");
+        if (name === "filterAct") {
+          var arr = state._filterDraft.activities.slice();
+          var i = arr.indexOf(val);
+          if (i > -1) arr.splice(i, 1);
+          else arr.push(val);
+          state._filterDraft.activities = arr;
+          render(false);
+          return;
+        }
+        var arr = state[name].slice();
+        var i = arr.indexOf(val);
+        if (i > -1) arr.splice(i, 1);
+        else arr.push(val);
+        var patch = {};
+        patch[name] = arr;
+        update(patch);
+      });
+      var locInput = app.querySelector("#locInput");
+      if (locInput) {
+        locInput.addEventListener("input", function (e) {
+          state.locationValue = e.target.value;
+          saveState();
+        });
+      }
+
+      // quick settings
+      var qsAa = app.querySelector("#qsAa");
+      if (qsAa)
+        qsAa.addEventListener("click", function () {
+          var existing = app.querySelector("#textSizeMenu");
+          if (existing) {
+            existing.remove();
+            return;
+          }
+          var div = document.createElement("div");
+          div.id = "textSizeMenu";
+          div.innerHTML = textSizeMenu();
+          app.querySelector(".screen").appendChild(div);
+          div.querySelectorAll("[data-textsize]").forEach(function (b) {
+            b.addEventListener("click", function () {
+              update({ textSize: b.getAttribute("data-textsize") });
+            });
+          });
+          div
+            .querySelector("#qsAaClose")
+            .addEventListener("click", function () {
+              div.remove();
+            });
+        });
+      var qsHelp = app.querySelector("#qsHelp");
+      if (qsHelp)
+        qsHelp.addEventListener("click", function () {
+          state.helpOpen = true;
+          render(true);
+        });
+      var closeHelp = app.querySelector("#closeHelp");
+      if (closeHelp)
+        closeHelp.addEventListener("click", function () {
+          state.helpOpen = false;
+          render(true);
+        });
+
+      // speech
+      on(app, "[data-say]", "click", function (e) {
+        speak(e.currentTarget.getAttribute("data-say"));
+      });
+      on(app, "[data-sa]", "click", function (e) {
+        var a = e.currentTarget.getAttribute("data-sa");
+        if (a === "pause") speechPause();
+        else if (a === "stop") speechStop();
+        else if (a === "replay") speechReplay();
+      });
+      var playBtns = app.querySelectorAll('[data-sp="play"]');
+      playBtns.forEach(function (b) {
+        b.addEventListener("click", function () {
+          if (speech.paused) {
+            speechResume();
+          }
+        });
+      });
+
+      // onboarding nav
+      var back = app.querySelector("#navBack");
+      if (back) back.addEventListener("click", prevStep);
+      var next = app.querySelector("#navNext");
+      if (next)
+        next.addEventListener("click", function () {
+          var id = ONB_STEPS[state.step];
+          if (id === "needs2") {
+            state.step = stepIndex("preview");
+            render(true);
+            announceStep();
+            return;
+          }
+          nextStep();
+        });
+
+      // preview flow
+      var pp = app.querySelector("#prevPreview");
+      if (pp)
+        pp.addEventListener("click", function () {
+          state.previewPage = Math.max(0, state.previewPage - 1);
+          render(true);
+        });
+      var np = app.querySelector("#nextPreview");
+      if (np)
+        np.addEventListener("click", function () {
+          state.previewPage = Math.min(
+            PREVIEW_PAGES.length - 1,
+            state.previewPage + 1,
+          );
+          render(true);
+        });
+      var ec = app.querySelector("#editChoices");
+      if (ec)
+        ec.addEventListener("click", function () {
+          goStep("buttons");
+        });
+      var lg = app.querySelector("#looksGood");
+      if (lg)
+        lg.addEventListener("click", function () {
+          state.onboardingComplete = true;
+          saveState();
+          go("browse");
+          announce("Setup complete. Showing events.");
+        });
+
+      // welcome autofocus button also serves as next (already navNext id)
+
+      // browse screen
+      var openFilters = app.querySelector("#openFilters");
+      if (openFilters)
+        openFilters.addEventListener("click", function () {
+          state._filterDraft = JSON.parse(JSON.stringify(state.filters));
+          state.filterPage = 0;
+          go("filters");
+        });
+      var clearFilters = app.querySelector("#clearFilters");
+      if (clearFilters)
+        clearFilters.addEventListener("click", function () {
+          update({
+            filters: { time: "upcoming", activities: [] },
+            browsePage: 0,
+          });
+          announce("Filters cleared.");
+        });
+      var goSettings = app.querySelector("#goSettings");
+      if (goSettings)
+        goSettings.addEventListener("click", function () {
+          go("settings");
+        });
+      var prevEvent = app.querySelector("#prevEvent");
+      if (prevEvent)
+        prevEvent.addEventListener("click", function () {
+          update({ browsePage: Math.max(0, state.browsePage - 1) });
+        });
+      var nextEvent = app.querySelector("#nextEvent");
+      if (nextEvent)
+        nextEvent.addEventListener("click", function () {
+          update({ browsePage: state.browsePage + 1 });
+        });
+      var skipEvent = app.querySelector("#skipEvent");
+      if (skipEvent)
+        skipEvent.addEventListener("click", function () {
+          update({ browsePage: state.browsePage + 1 });
+        });
+      var viewEvent = app.querySelector("#viewEvent");
+      if (viewEvent)
+        viewEvent.addEventListener("click", function () {
+          go("details", {
+            activeEventId: parseInt(viewEvent.getAttribute("data-id"), 10),
+          });
+        });
+      on(app, "[data-view]", "click", function (e) {
+        go("details", {
+          activeEventId: parseInt(
+            e.currentTarget.getAttribute("data-view"),
+            10,
+          ),
+        });
+      });
+      var prevPage = app.querySelector("#prevPage");
+      if (prevPage)
+        prevPage.addEventListener("click", function () {
+          update({ browsePage: Math.max(0, state.browsePage - 1) });
+        });
+      var nextPage = app.querySelector("#nextPage");
+      if (nextPage)
+        nextPage.addEventListener("click", function () {
+          update({ browsePage: state.browsePage + 1 });
+        });
+
+      // filters screen
+      var filterBack = app.querySelector("#filterBack");
+      if (filterBack)
+        filterBack.addEventListener("click", function () {
+          if (state.filterPage === 0) {
+            go("browse");
+          } else {
+            state.filterPage--;
+            render(true);
+          }
+        });
+      var filterNext = app.querySelector("#filterNext");
+      if (filterNext)
+        filterNext.addEventListener("click", function () {
+          state.filterPage++;
+          render(true);
+        });
+      var applyFilters = app.querySelector("#applyFilters");
+      if (applyFilters)
+        applyFilters.addEventListener("click", function () {
+          update({ filters: state._filterDraft, browsePage: 0 }, {});
+          go("browse");
+          announce("Filters applied.");
+        });
+
+      // details / register
+      var backToBrowse = app.querySelector("#backToBrowse");
+      if (backToBrowse)
+        backToBrowse.addEventListener("click", function () {
+          go("browse");
+        });
+      var doRegister = app.querySelector("#doRegister");
+      if (doRegister)
+        doRegister.addEventListener("click", function () {
+          go("register");
+        });
+      var regBackDetails = app.querySelector("#regBackDetails");
+      if (regBackDetails)
+        regBackDetails.addEventListener("click", function () {
+          go("details");
+        });
+      var regDone = app.querySelector("#regDone");
+      if (regDone)
+        regDone.addEventListener("click", function () {
+          go("browse");
+        });
+
+      // settings
+      var settingsBack = app.querySelector("#settingsBack");
+      if (settingsBack)
+        settingsBack.addEventListener("click", function () {
+          go("browse");
+        });
+      on(app, "[data-edit]", "click", function (e) {
+        startEdit(e.currentTarget.getAttribute("data-edit"), "settings");
+      });
+
+      // editing footer override: if editing, replace next/back semantics
+      if (state.editing) {
+        var footer = app.querySelector(".scr-footer");
+        var editingId = ONB_STEPS[state.step];
+        if (footer && editingId === "needs1") {
+          footer.innerHTML =
+            '<div></div><div></div><button class="btn btn-primary" id="editNextNeeds"><span>Next</span>' +
+            icon("chevronRight") +
+            "</button>";
+          footer
+            .querySelector("#editNextNeeds")
+            .addEventListener("click", function () {
+              goStep("needs2");
+            });
+        } else if (footer) {
+          footer.innerHTML =
+            '<button class="btn btn-primary" id="doneEdit">' +
+            icon("check") +
+            "<span>Save & Return to Settings</span></button><div></div><div></div>";
+          footer
+            .querySelector("#doneEdit")
+            .addEventListener("click", finishEdit);
+        }
+      }
+    }
+
+    /* ============================= INIT ============================= */
+    window.addEventListener("resize", function () {
+      render(false);
+    });
+    loadState();
+    render(true);
+  })();
+</script>
