@@ -1,2609 +1,875 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Impactathon - Accessible Events Network</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible:ital@1&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --blue-deep: #1c5fa8;
-        --blue: #2f7bd1;
-        --blue-light: #eaf2fc;
-        --ink: #1c2733;
-        --ink-soft: #5b6b7a;
-        --line: #dbe3ea;
-        --paper: #ffffff;
-        --stage: #f4f6f8;
-        --radius: 14px;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background: var(--stage);
-        font-family:
-          "Atkinson Hyperlegible", "Segoe UI", Helvetica, Arial, sans-serif;
-        color: var(--ink);
-      }
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
-      .device {
-        width: 700px;
-        height: 440px;
-        background: var(--paper);
-        border-radius: 28px;
-        box-shadow:
-          0 30px 60px rgba(20, 40, 60, 0.18),
-          0 0 0 10px #111,
-          0 0 0 12px #333;
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-      }
-      .topbar {
-        height: 6px;
-        width: 100%;
-        background: var(--line);
-        position: relative;
-        flex: 0 0 auto;
-      }
-      .topbar-fill {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        background: #d10074;
-        width: 0%;
-        transition: width 0.35s ease;
-      }
-      .screen {
-        flex: 1;
-        min-height: 0;
-        display: none;
-        flex-direction: column;
-        padding: 22px 26px 20px;
-        position: relative;
-        overflow-y: auto;
-        animation: fade 0.25s ease;
-      }
-      .screen.active {
-        display: flex;
-      }
-      @keyframes fade {
-        from {
-          opacity: 0;
-          transform: translateY(6px);
-        }
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome — Accessibility Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:#1c5fa8;
+    --blue:#2f7bd1;
+    --blue-light:#eaf2fc;
+    --ink:#1c2733;
+    --ink-soft:#5b6b7a;
+    --line:#dbe3ea;
+    --paper:#ffffff;
+    --stage:#f4f6f8;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--stage);
+    font-family:'Atkinson Hyperlegible', 'Segoe UI', Helvetica, Arial, sans-serif;
+    color:var(--ink);
+  }
+  body{
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh;
+  }
+  .device{
+    width:700px;
+    height:440px;
+    background:var(--paper);
+    border-radius:28px;
+    box-shadow:0 30px 60px rgba(20,40,60,.18), 0 0 0 10px #111 , 0 0 0 12px #333;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .topbar{
+    height:6px;
+    width:100%;
+    background:var(--line);
+    position:relative;
+    flex:0 0 auto;
+  }
+  .topbar-fill{
+    position:absolute; top:0; left:0; bottom:0;
+    background:#D10074;
+    width:0%;
+    transition:width .35s ease;
+  }
+  .screen{
+    flex:1;
+    min-height:0;
+    display:none;
+    flex-direction:column;
+    padding:22px 26px 20px;
+    position:relative;
+    overflow-y:auto;
+    animation:fade .25s ease;
+  }
+  .screen.active{ display:flex; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
 
-      .back-btn {
-        border: 1.5px solid var(--line);
-        background: var(--paper);
-        cursor: pointer;
-        color: var(--blue-deep);
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 1;
-        height: 42px;
-        padding: 0 18px 0 12px;
-        border-radius: 999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        margin-bottom: 10px;
-        width: fit-content;
-      }
-      .back-btn svg {
-        flex: 0 0 auto;
-        width: 16px;
-        height: 16px;
-      }
-      .back-btn:hover {
-        background: var(--blue-light);
-        border-color: var(--blue);
-      }
-      .back-btn:focus-visible {
-        outline: 2px solid var(--blue-deep);
-        outline-offset: 2px;
-      }
+  .back-btn{
+    border:1.5px solid var(--line); background:var(--paper); cursor:pointer;
+    color:var(--blue-deep); font-size:16px; font-weight:700; line-height:1;
+    height:42px; padding:0 18px 0 12px; border-radius:999px;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    margin-bottom:10px; width:fit-content;
+  }
+  .back-btn svg{ flex:0 0 auto; width:16px; height:16px; }
+  .back-btn:hover{ background:var(--blue-light); border-color:var(--blue); }
+  .back-btn:focus-visible{ outline:2px solid var(--blue-deep); outline-offset:2px;}
 
-      .head-row {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 6px;
-      }
-      .title-wrap {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      h1 {
-        font-size: 40px;
-        margin: 0;
-        color: var(--blue-deep);
-        font-weight: 700;
-        letter-spacing: 0.2px;
-      }
-      .speak-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 9px;
-        background: var(--blue-light);
-        border: 1px solid var(--line);
-        color: var(--blue-deep);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex: 0 0 auto;
-      }
-      .speak-btn svg {
-        width: 19px;
-        height: 19px;
-      }
-      .speak-btn:hover {
-        background: #dcebfb;
-      }
-      .speak-btn:focus-visible {
-        outline: 2px solid var(--blue-deep);
-        outline-offset: 2px;
-      }
-      .deco-icon {
-        color: var(--ink);
-        opacity: 0.85;
-        flex: 0 0 auto;
-        width: 56px;
-        height: 56px;
-      }
+  .head-row{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    margin-bottom:6px;
+  }
+  .title-wrap{ display:flex; align-items:center; gap:10px; }
+  h1{
+    font-size:40px; margin:0; color:var(--blue-deep); font-weight:700; letter-spacing:.2px;
+  }
+  .speak-btn{
+    width:38px; height:38px; border-radius:9px;
+    background:var(--blue-light); border:1px solid var(--line);
+    color:var(--blue-deep); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto;
+  }
+  .speak-btn svg{ width:19px; height:19px; }
+  .speak-btn:hover{ background:#dcebfb; }
+  .speak-btn:focus-visible{ outline:2px solid var(--blue-deep); outline-offset:2px;}
+  .deco-icon{ color:var(--ink); opacity:.85; flex:0 0 auto; width:56px; height:56px; }
 
-      .subtitle {
-        font-size: 16px;
-        color: var(--ink-soft);
-        margin: 2px 0 14px;
-      }
-      .subtitle b {
-        color: var(--ink);
-      }
+  .subtitle{
+    font-size:16px; color:var(--ink-soft); margin:2px 0 14px;
+  }
+  .subtitle b{ color:var(--ink); }
 
-      .options {
-        display: flex;
-        gap: 14px;
-        flex: 1;
-      }
-      .options.column {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .option-card {
-        flex: 1;
-        border: 1.5px solid var(--line);
-        border-radius: 12px;
-        background: var(--paper);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 18px 12px;
-        cursor: pointer;
-        font-size: 20px;
-        font-weight: 700;
-        color: var(--ink);
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s,
-          background 0.15s;
-        text-align: center;
-      }
-      .option-card p {
-        margin: 0;
-        font-weight: 400;
-        font-size: 13px;
-        color: var(--ink-soft);
-      }
-      .option-icon {
-        width: 26px;
-        height: 26px;
-        flex: 0 0 auto;
-      }
-      .option-card:hover {
-        border-color: var(--blue);
-      }
-      .option-card:focus-visible {
-        outline: 2px solid var(--blue-deep);
-        outline-offset: 2px;
-      }
-      .option-card.selected {
-        border-color: var(--blue-deep);
-        box-shadow:
-          0 0 0 2px var(--blue-light) inset,
-          0 0 0 2px var(--blue);
-        background: var(--blue-light);
-      }
+  .options{
+    display:flex; gap:14px; flex:1;
+  }
+  .options.column{ flex-direction:column; gap:8px; }
+  .option-card{
+    flex:1;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; padding:18px 12px;
+    cursor:pointer;
+    font-size:20px; font-weight:700;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s, background .15s;
+    text-align:center;
+  }
+  .option-card p{ margin:0; font-weight:400; font-size:13px; color:var(--ink-soft); }
+  .option-icon{ width:26px; height:26px; flex:0 0 auto; }
+  .option-card:hover{ border-color:var(--blue); }
+  .option-card:focus-visible{ outline:2px solid var(--blue-deep); outline-offset:2px; }
+  .option-card.selected{
+    border-color:var(--blue-deep);
+    box-shadow:0 0 0 2px var(--blue-light) inset, 0 0 0 2px var(--blue);
+    background:var(--blue-light);
+  }
 
-      .swatch {
-        width: 100%;
-        height: 56px;
-        border-radius: 8px;
-        overflow: hidden;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-      }
-      .swatch div:nth-child(1) {
-        background: #5fb2ee;
-      }
-      .swatch div:nth-child(2) {
-        background: #0e2f4e;
-      }
-      .swatch div:nth-child(3) {
-        background: #7fb7e8;
-      }
-      .swatch div:nth-child(4) {
-        background: #0e2f4e;
-      }
-      .swatch.bw div:nth-child(1) {
-        background: #d9d9d9;
-      }
-      .swatch.bw div:nth-child(2) {
-        background: #2a2a2a;
-      }
-      .swatch.bw div:nth-child(3) {
-        background: #8c8c8c;
-      }
-      .swatch.bw div:nth-child(4) {
-        background: #000;
-      }
-      .swatch.sys div:nth-child(1) {
-        background: var(--blue);
-      }
-      .swatch.sys div:nth-child(2) {
-        background: #0d1b2a;
-      }
-      .swatch.sys div:nth-child(3) {
-        background: var(--blue-deep);
-      }
-      .swatch.sys div:nth-child(4) {
-        background: #0d1b2a;
-      }
+  .swatch{
+    width:100%; height:56px; border-radius:8px; overflow:hidden;
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+  }
+  .swatch div:nth-child(1){ background:#5fb2ee; }
+  .swatch div:nth-child(2){ background:#0e2f4e; }
+  .swatch div:nth-child(3){ background:#7fb7e8; }
+  .swatch div:nth-child(4){ background:#0e2f4e; }
+  .swatch.bw div:nth-child(1){ background:#d9d9d9; }
+  .swatch.bw div:nth-child(2){ background:#2a2a2a; }
+  .swatch.bw div:nth-child(3){ background:#8c8c8c; }
+  .swatch.bw div:nth-child(4){ background:#000; }
+  .swatch.sys div:nth-child(1){ background:var(--blue); }
+  .swatch.sys div:nth-child(2){ background:#0d1b2a; }
+  .swatch.sys div:nth-child(3){ background:var(--blue-deep); }
+  .swatch.sys div:nth-child(4){ background:#0d1b2a; }
 
-      .button-demo {
-        width: 100%;
-        border-radius: 10px;
-        background: #33465c;
-        color: #fff;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .button-demo.medium {
-        height: 66px;
-        font-size: 17px;
-      }
-      .button-demo.large {
-        height: 90px;
-        font-size: 22px;
-      }
+  .button-demo{
+    width:100%; border-radius:10px; background:#33465c; color:#fff;
+    font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  .button-demo.medium{ height:66px; font-size:17px; }
+  .button-demo.large{ height:90px; font-size:22px; }
 
-      .level-card {
-        border: 1.5px solid var(--line);
-        border-radius: 12px;
-        padding: 8px 16px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .level-card:hover {
-        border-color: var(--blue);
-      }
-      .level-card.selected {
-        border-color: var(--blue-deep);
-        background: var(--blue-light);
-      }
-      .level-card b {
-        font-size: 14px;
-      }
-      .level-card span {
-        font-size: 12.5px;
-        color: var(--ink-soft);
-        font-style: italic;
-      }
+  .level-card{
+    border:1.5px solid var(--line);
+    border-radius:12px; padding:8px 16px; cursor:pointer;
+    display:flex; flex-direction:column; gap:2px;
+    transition:border-color .15s, background .15s;
+  }
+  .level-card:hover{ border-color:var(--blue); }
+  .level-card.selected{ border-color:var(--blue-deep); background:var(--blue-light); }
+  .level-card b{ font-size:14px; }
+  .level-card span{ font-size:12.5px; color:var(--ink-soft); font-style:italic; }
 
-      .spacer {
-        flex: 1;
-      }
+  .spacer{ flex:1; }
 
-      .submit-btn {
-        margin-top: 12px;
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 12px;
-        padding: 16px;
-        font-size: 19px;
-        font-weight: 700;
-        cursor: pointer;
-        width: 100%;
-        flex-shrink: 0;
-        transition:
-          background 0.15s,
-          opacity 0.15s;
-      }
-      .submit-btn:hover {
-        background: var(--blue-deep);
-      }
-      .submit-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-      }
-      .submit-btn:focus-visible {
-        outline: 2px solid var(--ink);
-        outline-offset: 2px;
-      }
-      .submit-btn.align-end {
-        width: auto;
-        align-self: flex-end;
-        padding-left: 36px;
-        padding-right: 36px;
-      }
+  .submit-btn{
+    margin-top:12px;
+    background:var(--blue);
+    color:#fff; border:none; border-radius:12px;
+    padding:16px; font-size:19px; font-weight:700;
+    cursor:pointer; width:100%;
+    flex-shrink:0;
+    transition:background .15s, opacity .15s;
+  }
+  .submit-btn:hover{ background:var(--blue-deep); }
+  .submit-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .submit-btn:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+  .submit-btn.align-end{ width:auto; align-self:flex-end; padding-left:36px; padding-right:36px; }
 
-      /* Landing screen */
-      .landing {
-        justify-content: center;
-        align-items: flex-start;
-        padding-left: 34px;
-      }
-      .landing h1 {
-        font-size: 34px;
-        margin-bottom: 6px;
-      }
-      .landing p {
-        font-size: 16px;
-        color: var(--ink);
-        font-weight: 700;
-        margin: 0;
-      }
+  /* Landing screen */
+  .landing{ justify-content:center; align-items:flex-start; padding-left:34px; }
+  .landing h1{ font-size:34px; margin-bottom:6px; }
+  .landing p{ font-size:16px; color:var(--ink); font-weight:700; margin:0; }
 
-      .step-label {
-        position: absolute;
-        top: 14px;
-        left: 26px;
-        font-size: 11px;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--ink-soft);
-        font-weight: 700;
-      }
-      .device.pre-topbar .topbar {
-        background: transparent;
-      }
+  .step-label{
+    position:absolute; top:14px; left:26px;
+    font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-soft); font-weight:700;
+  }
+  .device.pre-topbar .topbar{ background:transparent; }
 
-      /* Color scheme themes, applied when a contrast option is selected */
-      .device.theme-high {
-        --blue-deep: #eaf6ff;
-        --blue: #5fb2ee;
-        --blue-light: #123a5e;
-        --ink: #ffffff;
-        --ink-soft: #cfe3f7;
-        --line: #3a5e82;
-        --paper: #0b1d33;
-        --stage: #0b1d33;
-      }
-      .device.theme-bw {
-        --blue-deep: #000000;
-        --blue: #000000;
-        --blue-light: #e6e6e6;
-        --ink: #000000;
-        --ink-soft: #4a4a4a;
-        --line: #000000;
-        --paper: #ffffff;
-        --stage: #ffffff;
-      }
-      .device {
-        transition: background 0.25s ease;
-      }
-      .device.theme-high,
-      .device.theme-bw {
-        background: var(--paper);
-      }
+  /* Color scheme themes, applied when a contrast option is selected */
+  .device.theme-high{
+    --blue-deep:#eaf6ff;
+    --blue:#5fb2ee;
+    --blue-light:#123a5e;
+    --ink:#ffffff;
+    --ink-soft:#cfe3f7;
+    --line:#3a5e82;
+    --paper:#0b1d33;
+    --stage:#0b1d33;
+  }
+  .device.theme-bw{
+    --blue-deep:#000000;
+    --blue:#000000;
+    --blue-light:#e6e6e6;
+    --ink:#000000;
+    --ink-soft:#4a4a4a;
+    --line:#000000;
+    --paper:#ffffff;
+    --stage:#ffffff;
+  }
+  .device{ transition:background .25s ease; }
+  .device.theme-high, .device.theme-bw{ background:var(--paper); }
 
-      /* Event View Style screen */
-      .eventview-options {
-        display: flex;
-        gap: 16px;
-        flex: 1;
-        align-items: stretch;
-      }
-      .eventview-card {
-        flex: 1;
-        border: 1.5px solid var(--line);
-        border-radius: 14px;
-        background: var(--paper);
-        padding: 12px;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s,
-          background 0.15s;
-      }
-      .eventview-card:hover {
-        border-color: var(--blue);
-      }
-      .eventview-card:focus-visible {
-        outline: 2px solid var(--blue-deep);
-        outline-offset: 2px;
-      }
-      .eventview-card.selected {
-        border-color: var(--blue-deep);
-        box-shadow: 0 0 0 2px var(--blue);
-      }
-      .eventview-card .card-label {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--ink);
-      }
-      .preview-box {
-        flex: 1;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: var(--stage);
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        min-height: 0;
-      }
-      .ph {
-        background: #d9d9d9;
-        border-radius: 6px;
-      }
-      .single-mock {
-        flex: 1;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        min-height: 0;
-      }
-      .single-mock .ph-left {
-        border-radius: 8px;
-      }
-      .single-mock .ph-right-col {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        min-height: 0;
-      }
-      .single-mock .ph-right-col .ph:first-child {
-        height: 22%;
-      }
-      .single-mock .ph-right-col .ph:last-child {
-        flex: 1;
-      }
-      .mock-btn-row {
-        display: flex;
-        gap: 8px;
-      }
-      .mock-btn-row .mock-btn {
-        flex: 1;
-        background: var(--blue);
-        color: #fff;
-        border-radius: 8px;
-        font-size: 11px;
-        text-align: center;
-        padding: 7px 0;
-        font-weight: 600;
-      }
-      .grid-mock {
-        flex: 1;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 8px;
-        min-height: 0;
-      }
-      .grid-cell {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--paper);
-        padding: 6px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .grid-cell .ph.img {
-        flex: 1;
-        border-radius: 6px;
-      }
-      .grid-cell .ph.line {
-        height: 5px;
-      }
+  /* Event View Style screen */
+  .eventview-options{
+    display:flex; gap:16px; flex:1; align-items:stretch;
+  }
+  .eventview-card{
+    flex:1;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    background:var(--paper);
+    padding:12px;
+    cursor:pointer;
+    display:flex; flex-direction:column; gap:10px;
+    transition:border-color .15s, box-shadow .15s, background .15s;
+  }
+  .eventview-card:hover{ border-color:var(--blue); }
+  .eventview-card:focus-visible{ outline:2px solid var(--blue-deep); outline-offset:2px; }
+  .eventview-card.selected{
+    border-color:var(--blue-deep);
+    box-shadow:0 0 0 2px var(--blue);
+  }
+  .eventview-card .card-label{
+    font-size:16px; font-weight:700; color:var(--ink);
+  }
+  .preview-box{
+    flex:1;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--stage);
+    padding:10px;
+    display:flex; flex-direction:column; gap:8px;
+    min-height:0;
+  }
+  .ph{ background:#d9d9d9; border-radius:6px; }
+  .single-mock{ flex:1; display:grid; grid-template-columns:1fr 1fr; gap:8px; min-height:0; }
+  .single-mock .ph-left{ border-radius:8px; }
+  .single-mock .ph-right-col{ display:flex; flex-direction:column; gap:6px; min-height:0; }
+  .single-mock .ph-right-col .ph:first-child{ height:22%; }
+  .single-mock .ph-right-col .ph:last-child{ flex:1; }
+  .mock-btn-row{ display:flex; gap:8px; }
+  .mock-btn-row .mock-btn{
+    flex:1; background:var(--blue); color:#fff; border-radius:8px;
+    font-size:11px; text-align:center; padding:7px 0; font-weight:600;
+  }
+  .grid-mock{ flex:1; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:8px; min-height:0; }
+  .grid-cell{ border:1px solid var(--line); border-radius:8px; background:var(--paper); padding:6px; display:flex; flex-direction:column; gap:4px; }
+  .grid-cell .ph.img{ flex:1; border-radius:6px; }
+  .grid-cell .ph.line{ height:5px; }
 
-      /* Multi-select toggle grid (Sensory Preferences) */
-      .options.multi-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        flex: 1;
-      }
-      .toggle-card {
-        border: 1.5px solid var(--line);
-        border-radius: 12px;
-        background: var(--paper);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0 14px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--ink);
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s,
-          background 0.15s;
-      }
-      .toggle-icon {
-        width: 18px;
-        height: 18px;
-        flex: 0 0 auto;
-      }
-      .toggle-card:hover {
-        border-color: var(--blue);
-      }
-      .toggle-card:focus-visible {
-        outline: 2px solid var(--blue-deep);
-        outline-offset: 2px;
-      }
-      .toggle-card.selected {
-        border-color: var(--blue-deep);
-        box-shadow:
-          0 0 0 2px var(--blue-light) inset,
-          0 0 0 2px var(--blue);
-        background: var(--blue-light);
-      }
+  /* Multi-select toggle grid (Sensory Preferences) */
+  .options.multi-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; flex:1;
+  }
+  .toggle-card{
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    background:var(--paper);
+    display:flex; align-items:center; gap:10px;
+    padding:0 14px;
+    cursor:pointer;
+    font-size:14px; font-weight:700;
+    color:var(--ink);
+    transition:border-color .15s, box-shadow .15s, background .15s;
+  }
+  .toggle-icon{ width:18px; height:18px; flex:0 0 auto; }
+  .toggle-card:hover{ border-color:var(--blue); }
+  .toggle-card:focus-visible{ outline:2px solid var(--blue-deep); outline-offset:2px; }
+  .toggle-card.selected{
+    border-color:var(--blue-deep);
+    box-shadow:0 0 0 2px var(--blue-light) inset, 0 0 0 2px var(--blue);
+    background:var(--blue-light);
+  }
 
-      /* Event tabs bar (grid + detail pages) */
-      .event-topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-      }
-      .event-tabs {
-        display: flex;
-        gap: 14px;
-      }
-      .event-tab {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--ink-soft);
-        padding-bottom: 8px;
-        border-bottom: 2px solid transparent;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .event-tab.active {
-        color: var(--blue);
-        border-bottom-color: var(--blue);
-      }
+  /* Event tabs bar (grid + detail pages) */
+  .event-topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .event-tabs{ display:flex; gap:14px; }
+  .event-tab{
+    font-size:13px; font-weight:700; color:var(--ink-soft);
+    padding-bottom:8px; border-bottom:2px solid transparent; cursor:pointer;
+    white-space:nowrap;
+  }
+  .event-tab.active{ color:var(--blue); border-bottom-color:var(--blue); }
 
-      /* Events grid page */
-      .events-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        flex: 1;
-        min-height: 0;
-      }
-      .event-card {
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        background: var(--paper);
-        cursor: default;
-      }
-      .event-card.clickable {
-        cursor: pointer;
-      }
-      .event-card.clickable:hover {
-        border-color: var(--blue);
-      }
-      .event-thumb {
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 30px;
-        background: #eef2f6;
-      }
-      .event-card-body {
-        padding: 8px 10px;
-      }
-      .event-card-body .ename {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--ink);
-        margin: 0 0 3px;
-      }
-      .event-card-body .emeta {
-        font-size: 11px;
-        color: var(--ink-soft);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin: 1px 0;
-      }
-      .page-nav-row {
-        display: flex;
-        gap: 12px;
-        margin-top: 12px;
-      }
-      .page-nav-btn {
-        flex: 1;
-        border: none;
-        border-radius: 10px;
-        padding: 12px;
-        font-size: 15px;
-        font-weight: 700;
-        color: #fff;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .page-nav-btn.prev {
-        background: #5fa8e0;
-      }
-      .page-nav-btn.next {
-        background: var(--blue-deep);
-      }
+  /* Events grid page */
+  .events-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+    flex:1; min-height:0;
+  }
+  .event-card{
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    display:flex; flex-direction:column; background:var(--paper);
+    cursor:default;
+  }
+  .event-card.clickable{ cursor:pointer; }
+  .event-card.clickable:hover{ border-color:var(--blue); }
+  .event-thumb{
+    height:64px; display:flex; align-items:center; justify-content:center;
+    font-size:30px; background:#eef2f6;
+  }
+  .event-card-body{ padding:8px 10px; }
+  .event-card-body .ename{ font-size:13px; font-weight:700; color:var(--ink); margin:0 0 3px; }
+  .event-card-body .emeta{ font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:4px; margin:1px 0; }
+  .page-nav-row{ display:flex; gap:12px; margin-top:12px; }
+  .page-nav-btn{
+    flex:1; border:none; border-radius:10px; padding:12px; font-size:15px; font-weight:700;
+    color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .page-nav-btn.prev{ background:#5fa8e0; }
+  .page-nav-btn.next{ background:var(--blue-deep); }
 
-      /* Event detail page */
-      .event-detail-card {
-        flex: 1;
-        min-height: 0;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        display: flex;
-        gap: 16px;
-        padding: 14px;
-        margin-bottom: 14px;
-      }
-      .event-detail-img {
-        width: 38%;
-        border-radius: 8px;
-        background: #eef2f6;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 64px;
-        flex: 0 0 auto;
-      }
-      .event-detail-info {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-      }
-      .event-detail-info h2 {
-        font-size: 24px;
-        margin: 0 0 6px;
-        color: var(--ink);
-      }
-      .event-detail-info .eline {
-        font-size: 14px;
-        color: var(--ink);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin: 2px 0;
-      }
-      .event-detail-info .eline svg {
-        width: 14px;
-        height: 14px;
-        flex: 0 0 auto;
-      }
-      .event-detail-info p {
-        font-size: 13px;
-        color: var(--ink-soft);
-        margin-top: 10px;
-        line-height: 1.4;
-      }
-      .event-actions {
-        display: flex;
-        gap: 12px;
-      }
-      .event-actions button {
-        flex: 1;
-        border: none;
-        border-radius: 10px;
-        padding: 14px;
-        font-size: 17px;
-        font-weight: 700;
-        color: #fff;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .event-actions .btn-no {
-        background: #d10074;
-      }
-      .event-actions .btn-register {
-        background: var(--blue);
-      }
-      .event-actions .btn-no:hover {
-        background: #a80059;
-      }
-      .event-actions .btn-register:hover {
-        background: var(--blue-deep);
-      }
+  /* Event detail page */
+  .event-detail-card{
+    flex:1; min-height:0; border:1px solid var(--line); border-radius:12px;
+    display:flex; gap:16px; padding:14px; margin-bottom:14px;
+  }
+  .event-detail-img{
+    width:38%; border-radius:8px; background:#eef2f6;
+    display:flex; align-items:center; justify-content:center; font-size:64px;
+    flex:0 0 auto;
+  }
+  .event-detail-info{ display:flex; flex-direction:column; min-width:0; }
+  .event-detail-info h2{ font-size:24px; margin:0 0 6px; color:var(--ink); }
+  .event-detail-info .eline{ font-size:14px; color:var(--ink); display:flex; align-items:center; gap:6px; margin:2px 0; }
+  .event-detail-info .eline svg{ width:14px; height:14px; flex:0 0 auto; }
+  .event-detail-info p{ font-size:13px; color:var(--ink-soft); margin-top:10px; line-height:1.4; }
+  .event-actions{ display:flex; gap:12px; }
+  .event-actions button{
+    flex:1; border:none; border-radius:10px; padding:14px; font-size:17px; font-weight:700;
+    color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .event-actions .btn-no{ background:#D10074; }
+  .event-actions .btn-register{ background:var(--blue); }
+  .event-actions .btn-no:hover{ background:#a80059; }
+  .event-actions .btn-register:hover{ background:var(--blue-deep); }
 
-      /* Success page */
-      .success-check {
-        width: 64px;
-        height: 64px;
-        color: var(--blue);
-        margin-bottom: 14px;
-      }
-      .success-title {
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--blue);
-        margin: 0 0 10px;
-      }
-      .success-text {
-        font-size: 15px;
-        color: var(--ink);
-        margin: 0 0 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="device" id="device">
-      <div class="topbar"><div class="topbar-fill" id="topbarFill"></div></div>
+  /* Success page */
+  .success-check{ width:64px; height:64px; color:var(--blue); margin-bottom:14px; }
+  .success-title{ font-size:32px; font-weight:700; color:var(--blue); margin:0 0 10px; }
+  .success-text{ font-size:15px; color:var(--ink); margin:0 0 20px; }
+</style>
+</head>
+<body>
 
-      <!-- Screen 1: Landing -->
-      <section class="screen active landing" data-screen="1">
+<div class="device" id="device">
+
+  <div class="topbar"><div class="topbar-fill" id="topbarFill"></div></div>
+
+  <!-- Screen 1: Landing -->
+  <section class="screen active landing" data-screen="1">
+    <h1>Hello!</h1>
+    <p>Sign in or create an account</p>
+    <div class="spacer"></div>
+    <button class="submit-btn" onclick="goTo(2)">Get started</button>
+  </section>
+
+  <!-- Screen 2: Intro transition -->
+  <section class="screen" data-screen="2">
+    <button class="back-btn" aria-label="Back" onclick="goTo(1)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="spacer"></div>
+    <h1 style="margin-bottom:10px;">Let's customize your app preferences</h1>
+    <p class="subtitle" style="margin-bottom:0;">We'll walk through a few quick questions to set things up just right for you.</p>
+    <div class="spacer"></div>
+    <button class="submit-btn" onclick="goTo(3)">Continue</button>
+  </section>
+
+  <!-- Screen 3: Text-to-speech -->
+  <section class="screen" data-screen="3">
+    <button class="back-btn" aria-label="Back" onclick="goTo(2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
         <h1>Hello!</h1>
-        <p>Sign in or create an account</p>
-        <div class="spacer"></div>
-        <button class="submit-btn" onclick="goTo(2)">Get started</button>
-      </section>
-
-      <!-- Screen 2: Intro transition -->
-      <section class="screen" data-screen="2">
-        <button class="back-btn" aria-label="Back" onclick="goTo(1)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="spacer"></div>
-        <h1 style="margin-bottom: 10px">
-          Let's customize your app preferences
-        </h1>
-        <p class="subtitle" style="margin-bottom: 0">
-          We'll walk through a few quick questions to set things up just right
-          for you.
-        </p>
-        <div class="spacer"></div>
-        <button class="submit-btn" onclick="goTo(3)">Continue</button>
-      </section>
-
-      <!-- Screen 3: Text-to-speech -->
-      <section class="screen" data-screen="3">
-        <button class="back-btn" aria-label="Back" onclick="goTo(2)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Hello!</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Do you need text to speech?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"
-            />
-            <path d="M18 6l2-1M19 9l2.3-.3M18 12l2 1" />
-          </svg>
-        </div>
-        <p class="subtitle">Do you need <b>text-to-speech</b>?</p>
-        <div class="options" id="ttsOptions">
-          <div
-            class="option-card"
-            data-value="yes"
-            onclick="select(this, 'ttsOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" /></svg
-            >Yes
-          </div>
-          <div
-            class="option-card"
-            data-value="no"
-            onclick="select(this, 'ttsOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="M6 6l12 12" /></svg
-            >No
-          </div>
-        </div>
-        <button class="submit-btn" id="ttsSubmit" disabled onclick="goTo(4)">
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 4: Contrast -->
-      <section class="screen" data-screen="4">
-        <button class="back-btn" aria-label="Back" onclick="goTo(3)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Contrast</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Select colour display settings.')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="42"
-            height="42"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" />
-            <circle cx="12" cy="12" r="3" />
-            <path d="M20 5l2-1M21 8l2.3-.3M20 11l2 1" />
-          </svg>
-        </div>
-        <p class="subtitle">Select <b>colour display</b> settings</p>
-        <div class="options" id="contrastOptions">
-          <div
-            class="option-card"
-            data-value="system"
-            onclick="select(this, 'contrastOptions')"
-          >
-            <div class="swatch sys">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            System Settings
-          </div>
-          <div
-            class="option-card"
-            data-value="bw"
-            onclick="select(this, 'contrastOptions')"
-          >
-            <div class="swatch bw">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            Black and White
-          </div>
-          <div
-            class="option-card"
-            data-value="high"
-            onclick="select(this, 'contrastOptions')"
-          >
-            <div class="swatch">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-            High-Contrast
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="contrastSubmit"
-          disabled
-          onclick="goTo(5)"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 5: Buttons -->
-      <section class="screen" data-screen="5">
-        <button class="back-btn" aria-label="Back" onclick="goTo(4)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Buttons</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('What size of buttons would you like?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M8 13V6a2 2 0 1 1 4 0v6M12 12.5V4.5a2 2 0 1 1 4 0v8M16 13V7a2 2 0 1 1 4 0v7c0 4-2 7-6 7h-2c-3 0-4.5-1-6-3l-2-3.5c-.5-1 0-2 1-2.2.7-.1 1.3.1 1.8.7L8 13"
-            />
-            <path d="M21 6l2-1M22 9l2.3-.3" />
-          </svg>
-        </div>
-        <p class="subtitle">What <b>size</b> of buttons would you like</p>
-        <div class="options" id="buttonOptions">
-          <div
-            class="option-card"
-            data-value="medium"
-            onclick="select(this, 'buttonOptions')"
-          >
-            <div class="button-demo medium">Medium</div>
-          </div>
-          <div
-            class="option-card"
-            data-value="large"
-            onclick="select(this, 'buttonOptions')"
-          >
-            <div class="button-demo large">Large</div>
-          </div>
-        </div>
-        <button class="submit-btn" id="buttonSubmit" disabled onclick="goTo(6)">
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 6: Complexity -->
-      <section class="screen" data-screen="6">
-        <button class="back-btn" aria-label="Back" onclick="goTo(5)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Complexity</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Select a sentence length.')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8A3 3 0 0 0 8 17a3 3 0 0 0 5-2V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"
-            />
-            <path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 1 5.8A3 3 0 0 1 16 17" />
-          </svg>
-        </div>
-        <p class="subtitle">Select a <b>sentence length</b></p>
-        <div class="options column" id="complexityOptions">
-          <div
-            class="level-card"
-            data-value="higher"
-            onclick="select(this, 'complexityOptions')"
-          >
-            <b>Higher Level</b>
-            <span
-              >"Let's personalize your experience by learning a bit about your
-              interests and needs."</span
-            >
-          </div>
-          <div
-            class="level-card"
-            data-value="medium"
-            onclick="select(this, 'complexityOptions')"
-          >
-            <b>Medium Level</b>
-            <span
-              >"Let's get to know you. This helps us pick events you'll
-              like."</span
-            >
-          </div>
-          <div
-            class="level-card"
-            data-value="simple"
-            onclick="select(this, 'complexityOptions')"
-          >
-            <b>Simple Level</b>
-            <span>"Hi! Let's find fun things."</span>
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="complexitySubmit"
-          disabled
-          onclick="finish()"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 7: Event View Style -->
-      <section class="screen" data-screen="7">
-        <button class="back-btn" aria-label="Back" onclick="goTo(6)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <h1 style="margin-bottom: 14px">Event View Style</h1>
-        <div class="eventview-options" id="eventViewOptions">
-          <div
-            class="eventview-card"
-            data-value="single"
-            onclick="select(this, 'eventViewOptions')"
-          >
-            <div class="preview-box">
-              <div class="single-mock">
-                <div class="ph ph-left"></div>
-                <div class="ph-right-col">
-                  <div class="ph"></div>
-                  <div class="ph"></div>
-                </div>
-              </div>
-              <div class="mock-btn-row">
-                <div class="mock-btn">Skip</div>
-                <div class="mock-btn">Attend</div>
-              </div>
-            </div>
-            <div class="card-label">Single Event</div>
-          </div>
-          <div
-            class="eventview-card"
-            data-value="grid"
-            onclick="select(this, 'eventViewOptions')"
-          >
-            <div class="preview-box">
-              <div class="grid-mock">
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-                <div class="grid-cell">
-                  <div class="ph img"></div>
-                  <div class="ph line"></div>
-                  <div class="ph line" style="width: 60%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="card-label">Grid View</div>
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="eventViewSubmit"
-          disabled
-          onclick="goTo(8)"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 8: Event customization transition -->
-      <section class="screen" data-screen="8">
-        <button class="back-btn" aria-label="Back" onclick="goTo(7)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="spacer"></div>
-        <h1 style="margin-bottom: 10px">Moving onto event customizations</h1>
-        <p class="subtitle" style="margin-bottom: 0">
-          Next, let's set your preferences for finding and attending events.
-        </p>
-        <div class="spacer"></div>
-        <button class="submit-btn" onclick="goTo(9)">Continue</button>
-      </section>
-
-      <!-- Screen 9: Price -->
-      <section class="screen" data-screen="9">
-        <button class="back-btn" aria-label="Back" onclick="goTo(8)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Price</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Do you prefer events with a fee or no fee?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-            />
-          </svg>
-        </div>
-        <p class="subtitle">What's your <b>price</b> preference?</p>
-        <div class="options" id="priceOptions">
-          <div
-            class="option-card"
-            data-value="fee"
-            onclick="select(this, 'priceOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-              /></svg
-            >Fee
-          </div>
-          <div
-            class="option-card"
-            data-value="nofee"
-            onclick="select(this, 'priceOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-              />
-              <line x1="3" y1="3" x2="21" y2="21" /></svg
-            >No Fee
-          </div>
-        </div>
-        <button class="submit-btn" id="priceSubmit" disabled onclick="goTo(10)">
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 10: Location -->
-      <section class="screen" data-screen="10">
-        <button class="back-btn" aria-label="Back" onclick="goTo(9)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Location</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('How do you prefer to get to events?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        </div>
-        <p class="subtitle">How do you get to events?</p>
-        <div class="options" id="locationOptions">
-          <div
-            class="option-card"
-            data-value="walk"
-            onclick="select(this, 'locationOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"
-              />
-              <path
-                d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"
-              />
-              <path d="M16 17h4M4 13h4" /></svg
-            >Walk
-          </div>
-          <div
-            class="option-card"
-            data-value="transport"
-            onclick="select(this, 'locationOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"
-              />
-              <circle cx="7" cy="18" r="2" />
-              <circle cx="17" cy="18" r="2" /></svg
-            >Take Transportation
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="locationSubmit"
-          disabled
-          onclick="goLocationNext()"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 11: Within Walk -->
-      <section class="screen" data-screen="11">
-        <button class="back-btn" aria-label="Back" onclick="goTo(10)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Walking Distance</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('How far are you willing to walk?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 3" />
-          </svg>
-        </div>
-        <p class="subtitle">How far are you willing to <b>walk</b>?</p>
-        <div class="options" id="walkOptions">
-          <div
-            class="option-card"
-            data-value="10min"
-            onclick="select(this, 'walkOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 3" /></svg
-            >&lt; 10 min
-          </div>
-          <div
-            class="option-card"
-            data-value="30min"
-            onclick="select(this, 'walkOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 3" /></svg
-            >&lt; 30 min
-          </div>
-          <div
-            class="option-card"
-            data-value="1hr"
-            onclick="select(this, 'walkOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 7v5l3 3" /></svg
-            >1+ hr
-          </div>
-        </div>
-        <button class="submit-btn" id="walkSubmit" disabled onclick="goTo(13)">
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 12: Within Transportation -->
-      <section class="screen" data-screen="12">
-        <button class="back-btn" aria-label="Back" onclick="goTo(10)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Transportation</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('How do you prefer to travel?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"
-            />
-            <circle cx="7" cy="18" r="2" />
-            <circle cx="17" cy="18" r="2" />
-          </svg>
-        </div>
-        <p class="subtitle">How do you prefer to <b>travel</b>?</p>
-        <div class="options" id="transportOptions">
-          <div
-            class="option-card"
-            data-value="drive"
-            onclick="select(this, 'transportOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"
-              />
-              <rect x="3" y="11" width="18" height="6" rx="2" />
-              <circle cx="7.5" cy="17.5" r="1.5" />
-              <circle cx="16.5" cy="17.5" r="1.5" /></svg
-            >Drive
-          </div>
-          <div
-            class="option-card"
-            data-value="subway"
-            onclick="select(this, 'transportOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="4" y="3" width="16" height="16" rx="2" />
-              <path d="M4 11h16" />
-              <path d="M12 3v8" />
-              <circle cx="8.5" cy="15" r="1" />
-              <circle cx="15.5" cy="15" r="1" />
-              <path d="M8 19l-2 3M16 19l2 3" /></svg
-            >Subway
-          </div>
-          <div
-            class="option-card"
-            data-value="bus"
-            onclick="select(this, 'transportOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"
-              />
-              <circle cx="7" cy="18" r="2" />
-              <circle cx="17" cy="18" r="2" /></svg
-            >Bus
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="transportSubmit"
-          disabled
-          onclick="goTo(13)"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 13: Wheelchair Accessible -->
-      <section class="screen" data-screen="13">
-        <button
-          class="back-btn"
-          aria-label="Back"
-          onclick="goTo(locationBranch === 'walk' ? 11 : 12)"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Wheelchair</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Do you need wheelchair accessible venues?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <circle cx="12" cy="4" r="2" />
-            <path d="M19 17a7 7 0 0 1-13.5 2.5M5 13a7 7 0 0 1 7-7M9 9l2 4h6" />
-          </svg>
-        </div>
-        <p class="subtitle">Do you need <b>wheelchair accessible</b> venues?</p>
-        <div class="options" id="wheelchairOptions">
-          <div
-            class="option-card"
-            data-value="yes"
-            onclick="select(this, 'wheelchairOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" /></svg
-            >Yes
-          </div>
-          <div
-            class="option-card"
-            data-value="no"
-            onclick="select(this, 'wheelchairOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="M6 6l12 12" /></svg
-            >No
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="wheelchairSubmit"
-          disabled
-          onclick="goTo(14)"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 14: Service Animal -->
-      <section class="screen" data-screen="14">
-        <button class="back-btn" aria-label="Back" onclick="goTo(13)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Service Animal</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Will you be bringing a service animal?')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <circle cx="8" cy="8" r="2" />
-            <circle cx="16" cy="8" r="2" />
-            <circle cx="6" cy="14" r="2" />
-            <circle cx="18" cy="14" r="2" />
-            <path d="M12 13c-3 0-5 2-5 4.5S9 21 12 21s5-1 5-3.5S15 13 12 13Z" />
-          </svg>
-        </div>
-        <p class="subtitle">Will you be bringing a <b>service animal</b>?</p>
-        <div class="options" id="serviceAnimalOptions">
-          <div
-            class="option-card"
-            data-value="yes"
-            onclick="select(this, 'serviceAnimalOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" /></svg
-            >Yes
-          </div>
-          <div
-            class="option-card"
-            data-value="no"
-            onclick="select(this, 'serviceAnimalOptions')"
-          >
-            <svg
-              class="option-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="M6 6l12 12" /></svg
-            >No
-          </div>
-        </div>
-        <button
-          class="submit-btn"
-          id="serviceAnimalSubmit"
-          disabled
-          onclick="goTo(15)"
-        >
-          Submit
-        </button>
-      </section>
-
-      <!-- Screen 15: Sensory Preferences -->
-      <section class="screen" data-screen="15">
-        <button class="back-btn" aria-label="Back" onclick="goTo(14)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="head-row">
-          <div class="title-wrap">
-            <h1>Sensory</h1>
-            <button
-              class="speak-btn"
-              aria-label="Read aloud"
-              onclick="speak('Select any sensory friendly preferences.')"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            </button>
-          </div>
-          <svg
-            class="deco-icon"
-            width="46"
-            height="46"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"
-            />
-          </svg>
-        </div>
-        <p class="subtitle">Select any <b>sensory friendly</b> preferences</p>
-        <div class="options multi-grid" id="sensoryOptions">
-          <div
-            class="toggle-card"
-            data-value="reduced-audio"
-            onclick="toggleMulti(this)"
-          >
-            <svg
-              class="toggle-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polygon points="4 9 8 9 12 5 12 19 8 15 4 15 4 9" />
-              <line x1="16" y1="9" x2="21" y2="14" />
-              <line x1="21" y1="9" x2="16" y2="14" /></svg
-            >Reduced Audio
-          </div>
-          <div
-            class="toggle-card"
-            data-value="dimmed-lighting"
-            onclick="toggleMulti(this)"
-          >
-            <svg
-              class="toggle-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M9 18h6M10 21h4M12 3a6 6 0 0 0-6 6c0 2.4 1.4 3.9 2.4 5 .5.6.6 1.3.6 2h6c0-.7.1-1.4.6-2 1-1.1 2.4-2.6 2.4-5a6 6 0 0 0-6-6Z"
-              /></svg
-            >Dimmed Lighting
-          </div>
-          <div
-            class="toggle-card"
-            data-value="quiet-zones"
-            onclick="toggleMulti(this)"
-          >
-            <svg
-              class="toggle-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"
-              /></svg
-            >Quiet Zones Available
-          </div>
-          <div
-            class="toggle-card"
-            data-value="avoid-flashing"
-            onclick="toggleMulti(this)"
-          >
-            <svg
-              class="toggle-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M13 2 3 14h7l-1 8 11-14h-7l1-8Z" />
-              <line x1="3" y1="3" x2="21" y2="21" /></svg
-            >Avoid Flashing Lights
-          </div>
-          <div
-            class="toggle-card"
-            data-value="hands-on"
-            onclick="toggleMulti(this)"
-          >
-            <svg
-              class="toggle-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path
-                d="M8 13V6a2 2 0 1 1 4 0v6M12 12.5V4.5a2 2 0 1 1 4 0v8M16 13V7a2 2 0 1 1 4 0v7c0 4-2 7-6 7h-2c-3 0-4.5-1-6-3l-2-3.5c-.5-1 0-2 1-2.2.7-.1 1.3.1 1.8.7L8 13"
-              /></svg
-            >Hands-On Activities
-          </div>
-        </div>
-        <button class="submit-btn" onclick="goTo(16)">Submit</button>
-      </section>
-
-      <!-- Screen 16: Events selected intro -->
-      <section class="screen" data-screen="16">
-        <button class="back-btn" aria-label="Back" onclick="goTo(15)">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" /></svg
-          >Back
-        </button>
-        <div class="spacer"></div>
-        <h1 style="margin-bottom: 10px">
-          Ok! Here are some events selected for you.
-        </h1>
-        <p class="subtitle" style="margin-bottom: 0">
-          Based on your preferences, we've put together a few things you might
-          like.
-        </p>
-        <div class="spacer"></div>
-        <button class="submit-btn" onclick="goTo(17)">Continue</button>
-      </section>
-
-      <!-- Screen 17: Events Grid -->
-      <section class="screen" data-screen="17">
-        <div class="event-topbar">
-          <div class="event-tabs">
-            <div
-              class="event-tab active"
-              data-cat="sports"
-              onclick="switchTab(this, 'sports')"
-            >
-              Sports
-            </div>
-            <div
-              class="event-tab"
-              data-cat="art"
-              onclick="switchTab(this, 'art')"
-            >
-              Art
-            </div>
-            <div
-              class="event-tab"
-              data-cat="food"
-              onclick="switchTab(this, 'food')"
-            >
-              Food
-            </div>
-            <div
-              class="event-tab"
-              data-cat="all"
-              onclick="switchTab(this, 'all')"
-            >
-              All Events
-            </div>
-            <div
-              class="event-tab"
-              data-cat="my"
-              onclick="switchTab(this, 'my')"
-            >
-              My Events
-            </div>
-          </div>
-          <button
-            class="speak-btn"
-            aria-label="Read aloud"
-            onclick="speak('Here are some events near you.')"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-              <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-            </svg>
-          </button>
-        </div>
-        <div class="events-grid" id="eventsGrid"></div>
-        <div class="page-nav-row">
-          <button class="page-nav-btn prev" onclick="goTo(16)">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" /></svg
-            >Back
-          </button>
-          <button class="page-nav-btn next">
-            Next Page<svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <!-- Screen 18: Event Detail (dynamic - swipes through current list) -->
-      <section class="screen" data-screen="18">
-        <div class="event-topbar">
-          <div class="event-tabs">
-            <div class="event-tab">Sports</div>
-            <div class="event-tab">Art</div>
-            <div class="event-tab">Food</div>
-            <div class="event-tab">All Events</div>
-            <div class="event-tab">My Events</div>
-          </div>
-          <button
-            class="speak-btn"
-            id="edSpeak"
-            aria-label="Read aloud"
-            onclick="speakEventDetail()"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-              <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-            </svg>
-          </button>
-        </div>
-        <div class="event-detail-card">
-          <div class="event-detail-img" id="edEmoji"></div>
-          <div class="event-detail-info">
-            <h2 id="edName"></h2>
-            <div class="eline" id="edLocation"></div>
-            <div class="eline">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="4" r="2" />
-                <path d="M12 6v6l3 3M9 12l-2 2M9 12l2 5" /></svg
-              ><span id="edTime"></span>
-            </div>
-            <div class="eline" id="edDate"></div>
-            <p id="edDesc"></p>
-          </div>
-        </div>
-        <div class="event-actions">
-          <button class="btn-no" onclick="eventNo()">
-            No<svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="M6 6l12 12" />
-            </svg>
-          </button>
-          <button class="btn-register" onclick="eventRegister()">
-            Register<svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <!-- Screen 19: Success -->
-      <section class="screen landing" data-screen="19">
-        <svg
-          class="success-check"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-        <p class="success-title">Success!</p>
-        <p class="success-text">
-          We have signed you up with information from your profile.
-        </p>
-        <div class="spacer"></div>
-        <div class="event-actions" style="width: 100%">
-          <button class="btn-no" onclick="undoLastRegistration()">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9 14 4 9l5-5" />
-              <path d="M4 9h11a5 5 0 0 1 0 10h-1" /></svg
-            >Undo
-          </button>
-          <button class="btn-register" onclick="goTo(17)">
-            Continue<svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-        </div>
-      </section>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Do you need text to speech?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"/>
+        <path d="M18 6l2-1M19 9l2.3-.3M18 12l2 1"/>
+      </svg>
     </div>
+    <p class="subtitle">Do you need <b>text-to-speech</b>?</p>
+    <div class="options" id="ttsOptions">
+      <div class="option-card" data-value="yes" onclick="select(this,'ttsOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><polyline points="20 6 9 17 4 12"/></svg>Yes</div>
+      <div class="option-card" data-value="no" onclick="select(this,'ttsOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>No</div>
+    </div>
+    <button class="submit-btn" id="ttsSubmit" disabled onclick="goTo(4)">Submit</button>
+  </section>
 
-    <script>
-      const totalSteps = 19;
-      let locationBranch = null;
-      function goTo(n) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
-        document
-          .querySelector(`.screen[data-screen="${n}"]`)
-          .classList.add("active");
-        document.getElementById("topbarFill").style.width =
-          (n === 1 ? 0 : ((n - 1) / (totalSteps - 1)) * 100) + "%";
-        if (n === 17 && typeof resetEventTabs === "function") resetEventTabs();
-      }
-      function goLocationNext() {
-        const selected = document.querySelector("#locationOptions .selected");
-        if (!selected) return;
-        locationBranch = selected.getAttribute("data-value");
-        goTo(locationBranch === "walk" ? 11 : 12);
-      }
-      function toggleMulti(el) {
-        el.classList.toggle("selected");
-      }
-      function select(el, groupId) {
-        const group = document.getElementById(groupId);
-        group
-          .querySelectorAll(".option-card, .level-card, .eventview-card")
-          .forEach((c) => c.classList.remove("selected"));
-        el.classList.add("selected");
-        const submitId = {
-          ttsOptions: "ttsSubmit",
-          contrastOptions: "contrastSubmit",
-          buttonOptions: "buttonSubmit",
-          complexityOptions: "complexitySubmit",
-          eventViewOptions: "eventViewSubmit",
-          priceOptions: "priceSubmit",
-          locationOptions: "locationSubmit",
-          walkOptions: "walkSubmit",
-          transportOptions: "transportSubmit",
-          wheelchairOptions: "wheelchairSubmit",
-          serviceAnimalOptions: "serviceAnimalSubmit",
-        }[groupId];
-        if (submitId) document.getElementById(submitId).disabled = false;
+  <!-- Screen 4: Contrast -->
+  <section class="screen" data-screen="4">
+    <button class="back-btn" aria-label="Back" onclick="goTo(3)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Contrast</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Select colour display settings.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>
+        <path d="M20 5l2-1M21 8l2.3-.3M20 11l2 1"/>
+      </svg>
+    </div>
+    <p class="subtitle">Select <b>colour display</b> settings</p>
+    <div class="options" id="contrastOptions">
+      <div class="option-card" data-value="system" onclick="select(this,'contrastOptions')">
+        <div class="swatch sys"><div></div><div></div><div></div><div></div></div>
+        System Settings
+      </div>
+      <div class="option-card" data-value="bw" onclick="select(this,'contrastOptions')">
+        <div class="swatch bw"><div></div><div></div><div></div><div></div></div>
+        Black and White
+      </div>
+      <div class="option-card" data-value="high" onclick="select(this,'contrastOptions')">
+        <div class="swatch"><div></div><div></div><div></div><div></div></div>
+        High-Contrast
+      </div>
+    </div>
+    <button class="submit-btn" id="contrastSubmit" disabled onclick="goTo(5)">Submit</button>
+  </section>
 
-        if (groupId === "contrastOptions") {
-          const device = document.getElementById("device");
-          device.classList.remove("theme-high", "theme-bw");
-          const value = el.getAttribute("data-value");
-          if (value === "high") device.classList.add("theme-high");
-          else if (value === "bw") device.classList.add("theme-bw");
-          // 'system' clears back to the default light theme
-        }
-      }
-      function finish() {
-        goTo(7);
-      }
+  <!-- Screen 5: Buttons -->
+  <section class="screen" data-screen="5">
+    <button class="back-btn" aria-label="Back" onclick="goTo(4)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Buttons</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('What size of buttons would you like?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 13V6a2 2 0 1 1 4 0v6M12 12.5V4.5a2 2 0 1 1 4 0v8M16 13V7a2 2 0 1 1 4 0v7c0 4-2 7-6 7h-2c-3 0-4.5-1-6-3l-2-3.5c-.5-1 0-2 1-2.2.7-.1 1.3.1 1.8.7L8 13"/>
+        <path d="M21 6l2-1M22 9l2.3-.3"/>
+      </svg>
+    </div>
+    <p class="subtitle">What <b>size</b> of buttons would you like</p>
+    <div class="options" id="buttonOptions">
+      <div class="option-card" data-value="medium" onclick="select(this,'buttonOptions')">
+        <div class="button-demo medium">Medium</div>
+      </div>
+      <div class="option-card" data-value="large" onclick="select(this,'buttonOptions')">
+        <div class="button-demo large">Large</div>
+      </div>
+    </div>
+    <button class="submit-btn" id="buttonSubmit" disabled onclick="goTo(6)">Submit</button>
+  </section>
 
-      // ---- Events data & My Events tracking ----
-      const EVENTS = {
-        sports: [
-          {
-            id: "soccer",
-            emoji: "⚽",
-            name: "Soccer",
-            date: "July 15",
-            time: "10 minute",
-            location: "Bechtel Park",
-            fullDate: "July 15 at 2pm",
-            desc: "Learn to play soccer with friendly coaches. Everyone is welcome!",
-          },
-          {
-            id: "basketball",
-            emoji: "🏀",
-            name: "Basketball",
-            date: "July 12",
-            time: "5 minute",
-            location: "YMCA Kitchener",
-            fullDate: "July 12 (Tomorrow) at 2pm",
-            desc: "Join us for a fun game of basketball. Everyone is welcome!",
-          },
-          {
-            id: "swimming",
-            emoji: "🏊",
-            name: "Swimming",
-            date: "July 20",
-            time: "10 minute",
-            location: "Kitchener Aquatic Centre",
-            fullDate: "July 20 at 11am",
-            desc: "Cool off with an open swim session. All skill levels welcome!",
-          },
-          {
-            id: "running",
-            emoji: "🏃",
-            name: "Running",
-            date: "July 20",
-            time: "10 minute",
-            location: "Victoria Park Trail",
-            fullDate: "July 20 at 8am",
-            desc: "Join a casual group run around the park. All paces welcome!",
-          },
-          {
-            id: "tennis",
-            emoji: "🎾",
-            name: "Tennis",
-            date: "July 20",
-            time: "10 minute",
-            location: "Doon Valley Tennis Courts",
-            fullDate: "July 20 at 3pm",
-            desc: "Friendly tennis matches for beginners and pros alike.",
-          },
-          {
-            id: "volleyball",
-            emoji: "🏐",
-            name: "Volleyball",
-            date: "July 20",
-            time: "10 minute",
-            location: "Budd Park",
-            fullDate: "July 20 at 4pm",
-            desc: "Beach volleyball meetup, teams formed on the spot!",
-          },
-        ],
-        art: [
-          {
-            id: "pottery",
-            emoji: "🎨",
-            name: "Pottery Workshop",
-            date: "July 18",
-            time: "15 minute",
-            location: "Bechtel Park Studio",
-            fullDate: "July 18 at 1pm",
-            desc: "Get hands-on with clay in this beginner-friendly pottery session.",
-          },
-          {
-            id: "mural",
-            emoji: "🖌️",
-            name: "Community Mural Painting",
-            date: "July 19",
-            time: "20 minute",
-            location: "Downtown Kitchener",
-            fullDate: "July 19 at 10am",
-            desc: "Help paint a community mural, no experience necessary.",
-          },
-          {
-            id: "lifedrawing",
-            emoji: "✏️",
-            name: "Life Drawing Class",
-            date: "July 21",
-            time: "10 minute",
-            location: "KW Art Gallery",
-            fullDate: "July 21 at 6pm",
-            desc: "Practice figure drawing in a relaxed studio setting.",
-          },
-          {
-            id: "photowalk",
-            emoji: "📷",
-            name: "Photography Walk",
-            date: "July 22",
-            time: "5 minute",
-            location: "Victoria Park",
-            fullDate: "July 22 at 9am",
-            desc: "Explore the park with your camera and a local photographer guide.",
-          },
-        ],
-        food: [
-          {
-            id: "farmersmarket",
-            emoji: "🥕",
-            name: "Farmers Market",
-            date: "July 13",
-            time: "10 minute",
-            location: "Kitchener Market",
-            fullDate: "July 13 at 9am",
-            desc: "Browse local produce, baked goods, and crafts from area vendors.",
-          },
-          {
-            id: "pizza",
-            emoji: "🍕",
-            name: "Pizza Making Class",
-            date: "July 16",
-            time: "15 minute",
-            location: "Community Kitchen",
-            fullDate: "July 16 at 5pm",
-            desc: "Learn to make pizza from scratch, dough included!",
-          },
-          {
-            id: "icecream",
-            emoji: "🍦",
-            name: "Ice Cream Social",
-            date: "July 17",
-            time: "5 minute",
-            location: "Victoria Park",
-            fullDate: "July 17 at 3pm",
-            desc: "Free scoops and games at the annual ice cream social.",
-          },
-          {
-            id: "foodfair",
-            emoji: "🌍",
-            name: "Taste of the World Food Fair",
-            date: "July 20",
-            time: "25 minute",
-            location: "Bingemans",
-            fullDate: "July 20 at 12pm",
-            desc: "Sample dishes from cuisines around the world.",
-          },
-        ],
-      };
-      EVENTS.all = [...EVENTS.sports, ...EVENTS.art, ...EVENTS.food];
+  <!-- Screen 6: Complexity -->
+  <section class="screen" data-screen="6">
+    <button class="back-btn" aria-label="Back" onclick="goTo(5)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Complexity</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Select a sentence length.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8A3 3 0 0 0 8 17a3 3 0 0 0 5-2V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/>
+        <path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 1 5.8A3 3 0 0 1 16 17"/>
+      </svg>
+    </div>
+    <p class="subtitle">Select a <b>sentence length</b></p>
+    <div class="options column" id="complexityOptions">
+      <div class="level-card" data-value="higher" onclick="select(this,'complexityOptions')">
+        <b>Higher Level</b>
+        <span>"Let's personalize your experience by learning a bit about your interests and needs."</span>
+      </div>
+      <div class="level-card" data-value="medium" onclick="select(this,'complexityOptions')">
+        <b>Medium Level</b>
+        <span>"Let's get to know you. This helps us pick events you'll like."</span>
+      </div>
+      <div class="level-card" data-value="simple" onclick="select(this,'complexityOptions')">
+        <b>Simple Level</b>
+        <span>"Hi! Let's find fun things."</span>
+      </div>
+    </div>
+    <button class="submit-btn" id="complexitySubmit" disabled onclick="finish()">Submit</button>
+  </section>
 
-      let registeredIds = [];
-      let declinedIds = [];
-      let lastList = [];
-      let currentIndex = 0;
-      let lastRegisteredId = null;
+  <!-- Screen 7: Event View Style -->
+  <section class="screen" data-screen="7">
+    <button class="back-btn" aria-label="Back" onclick="goTo(6)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <h1 style="margin-bottom:14px;">Event View Style</h1>
+    <div class="eventview-options" id="eventViewOptions">
+      <div class="eventview-card" data-value="single" onclick="select(this,'eventViewOptions')">
+        <div class="preview-box">
+          <div class="single-mock">
+            <div class="ph ph-left"></div>
+            <div class="ph-right-col">
+              <div class="ph"></div>
+              <div class="ph"></div>
+            </div>
+          </div>
+          <div class="mock-btn-row">
+            <div class="mock-btn">Skip</div>
+            <div class="mock-btn">Attend</div>
+          </div>
+        </div>
+        <div class="card-label">Single Event</div>
+      </div>
+      <div class="eventview-card" data-value="grid" onclick="select(this,'eventViewOptions')">
+        <div class="preview-box">
+          <div class="grid-mock">
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+            <div class="grid-cell"><div class="ph img"></div><div class="ph line"></div><div class="ph line" style="width:60%;"></div></div>
+          </div>
+        </div>
+        <div class="card-label">Grid View</div>
+      </div>
+    </div>
+    <button class="submit-btn" id="eventViewSubmit" disabled onclick="goTo(8)">Submit</button>
+  </section>
 
-      function eventCardHTML(e) {
-        const check = registeredIds.includes(e.id)
-          ? ' <span style="color:var(--blue);">&#10003;</span>'
-          : "";
-        return `<div class="event-card clickable" onclick="openEventDetail('${e.id}')">
+  <!-- Screen 8: Event customization transition -->
+  <section class="screen" data-screen="8">
+    <button class="back-btn" aria-label="Back" onclick="goTo(7)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="spacer"></div>
+    <h1 style="margin-bottom:10px;">Moving onto event customizations</h1>
+    <p class="subtitle" style="margin-bottom:0;">Next, let's set your preferences for finding and attending events.</p>
+    <div class="spacer"></div>
+    <button class="submit-btn" onclick="goTo(9)">Continue</button>
+  </section>
+
+  <!-- Screen 9: Price -->
+  <section class="screen" data-screen="9">
+    <button class="back-btn" aria-label="Back" onclick="goTo(8)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Price</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Do you prefer events with a fee or no fee?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+    </div>
+    <p class="subtitle">What's your <b>price</b> preference?</p>
+    <div class="options" id="priceOptions">
+      <div class="option-card" data-value="fee" onclick="select(this,'priceOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Fee</div>
+      <div class="option-card" data-value="nofee" onclick="select(this,'priceOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><line x1="3" y1="3" x2="21" y2="21"/></svg>No Fee</div>
+    </div>
+    <button class="submit-btn" id="priceSubmit" disabled onclick="goTo(10)">Submit</button>
+  </section>
+
+  <!-- Screen 10: Location -->
+  <section class="screen" data-screen="10">
+    <button class="back-btn" aria-label="Back" onclick="goTo(9)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Location</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('How do you prefer to get to events?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+    </div>
+    <p class="subtitle">How do you get to events?</p>
+    <div class="options" id="locationOptions">
+      <div class="option-card" data-value="walk" onclick="select(this,'locationOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4M4 13h4"/></svg>Walk</div>
+      <div class="option-card" data-value="transport" onclick="select(this,'locationOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Take Transportation</div>
+    </div>
+    <button class="submit-btn" id="locationSubmit" disabled onclick="goLocationNext()">Submit</button>
+  </section>
+
+  <!-- Screen 11: Within Walk -->
+  <section class="screen" data-screen="11">
+    <button class="back-btn" aria-label="Back" onclick="goTo(10)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Walking Distance</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('How far are you willing to walk?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+      </svg>
+    </div>
+    <p class="subtitle">How far are you willing to <b>walk</b>?</p>
+    <div class="options" id="walkOptions">
+      <div class="option-card" data-value="10min" onclick="select(this,'walkOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>&lt; 10 min</div>
+      <div class="option-card" data-value="30min" onclick="select(this,'walkOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>&lt; 30 min</div>
+      <div class="option-card" data-value="1hr" onclick="select(this,'walkOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>1+ hr</div>
+    </div>
+    <button class="submit-btn" id="walkSubmit" disabled onclick="goTo(13)">Submit</button>
+  </section>
+
+  <!-- Screen 12: Within Transportation -->
+  <section class="screen" data-screen="12">
+    <button class="back-btn" aria-label="Back" onclick="goTo(10)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Transportation</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('How do you prefer to travel?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+      </svg>
+    </div>
+    <p class="subtitle">How do you prefer to <b>travel</b>?</p>
+    <div class="options" id="transportOptions">
+      <div class="option-card" data-value="drive" onclick="select(this,'transportOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>Drive</div>
+      <div class="option-card" data-value="subway" onclick="select(this,'transportOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><circle cx="8.5" cy="15" r="1"/><circle cx="15.5" cy="15" r="1"/><path d="M8 19l-2 3M16 19l2 3"/></svg>Subway</div>
+      <div class="option-card" data-value="bus" onclick="select(this,'transportOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M8 6v6M16 6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Bus</div>
+    </div>
+    <button class="submit-btn" id="transportSubmit" disabled onclick="goTo(13)">Submit</button>
+  </section>
+
+  <!-- Screen 13: Wheelchair Accessible -->
+  <section class="screen" data-screen="13">
+    <button class="back-btn" aria-label="Back" onclick="goTo(locationBranch === 'walk' ? 11 : 12)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Wheelchair</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Do you need wheelchair accessible venues?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="4" r="2"/><path d="M19 17a7 7 0 0 1-13.5 2.5M5 13a7 7 0 0 1 7-7M9 9l2 4h6"/>
+      </svg>
+    </div>
+    <p class="subtitle">Do you need <b>wheelchair accessible</b> venues?</p>
+    <div class="options" id="wheelchairOptions">
+      <div class="option-card" data-value="yes" onclick="select(this,'wheelchairOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><polyline points="20 6 9 17 4 12"/></svg>Yes</div>
+      <div class="option-card" data-value="no" onclick="select(this,'wheelchairOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>No</div>
+    </div>
+    <button class="submit-btn" id="wheelchairSubmit" disabled onclick="goTo(14)">Submit</button>
+  </section>
+
+  <!-- Screen 14: Service Animal -->
+  <section class="screen" data-screen="14">
+    <button class="back-btn" aria-label="Back" onclick="goTo(13)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Service Animal</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Will you be bringing a service animal?')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="2"/><circle cx="16" cy="8" r="2"/><circle cx="6" cy="14" r="2"/><circle cx="18" cy="14" r="2"/><path d="M12 13c-3 0-5 2-5 4.5S9 21 12 21s5-1 5-3.5S15 13 12 13Z"/>
+      </svg>
+    </div>
+    <p class="subtitle">Will you be bringing a <b>service animal</b>?</p>
+    <div class="options" id="serviceAnimalOptions">
+      <div class="option-card" data-value="yes" onclick="select(this,'serviceAnimalOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><polyline points="20 6 9 17 4 12"/></svg>Yes</div>
+      <div class="option-card" data-value="no" onclick="select(this,'serviceAnimalOptions')"><svg class="option-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>No</div>
+    </div>
+    <button class="submit-btn" id="serviceAnimalSubmit" disabled onclick="goTo(15)">Submit</button>
+  </section>
+
+  <!-- Screen 15: Sensory Preferences -->
+  <section class="screen" data-screen="15">
+    <button class="back-btn" aria-label="Back" onclick="goTo(14)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="head-row">
+      <div class="title-wrap">
+        <h1>Sensory</h1>
+        <button class="speak-btn" aria-label="Read aloud" onclick="speak('Select any sensory friendly preferences.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      </div>
+      <svg class="deco-icon" width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"/>
+      </svg>
+    </div>
+    <p class="subtitle">Select any <b>sensory friendly</b> preferences</p>
+    <div class="options multi-grid" id="sensoryOptions">
+      <div class="toggle-card" data-value="reduced-audio" onclick="toggleMulti(this)"><svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 9 8 9 12 5 12 19 8 15 4 15 4 9"/><line x1="16" y1="9" x2="21" y2="14"/><line x1="21" y1="9" x2="16" y2="14"/></svg>Reduced Audio</div>
+      <div class="toggle-card" data-value="dimmed-lighting" onclick="toggleMulti(this)"><svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-6 6c0 2.4 1.4 3.9 2.4 5 .5.6.6 1.3.6 2h6c0-.7.1-1.4.6-2 1-1.1 2.4-2.6 2.4-5a6 6 0 0 0-6-6Z"/></svg>Dimmed Lighting</div>
+      <div class="toggle-card" data-value="quiet-zones" onclick="toggleMulti(this)"><svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15c-2 0-3.5-2-3.5-5A5.5 5.5 0 0 1 10 4.5 5.5 5.5 0 0 1 15.5 10c0 1-.3 1.6-.7 2.3-.5.8-1.1 1.2-1.1 2.3V17a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-1"/></svg>Quiet Zones Available</div>
+      <div class="toggle-card" data-value="avoid-flashing" onclick="toggleMulti(this)"><svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-8Z"/><line x1="3" y1="3" x2="21" y2="21"/></svg>Avoid Flashing Lights</div>
+      <div class="toggle-card" data-value="hands-on" onclick="toggleMulti(this)"><svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V6a2 2 0 1 1 4 0v6M12 12.5V4.5a2 2 0 1 1 4 0v8M16 13V7a2 2 0 1 1 4 0v7c0 4-2 7-6 7h-2c-3 0-4.5-1-6-3l-2-3.5c-.5-1 0-2 1-2.2.7-.1 1.3.1 1.8.7L8 13"/></svg>Hands-On Activities</div>
+    </div>
+    <button class="submit-btn" onclick="goTo(16)">Submit</button>
+  </section>
+
+  <!-- Screen 16: Events selected intro -->
+  <section class="screen" data-screen="16">
+    <button class="back-btn" aria-label="Back" onclick="goTo(15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="spacer"></div>
+    <h1 style="margin-bottom:10px;">Ok! Here are some events selected for you.</h1>
+    <p class="subtitle" style="margin-bottom:0;">Based on your preferences, we've put together a few things you might like.</p>
+    <div class="spacer"></div>
+    <button class="submit-btn" onclick="goTo(17)">Continue</button>
+  </section>
+
+  <!-- Screen 17: Events Grid -->
+  <section class="screen" data-screen="17">
+    <div class="event-topbar">
+      <div class="event-tabs">
+        <div class="event-tab active" data-cat="sports" onclick="switchTab(this,'sports')">Sports</div>
+        <div class="event-tab" data-cat="art" onclick="switchTab(this,'art')">Art</div>
+        <div class="event-tab" data-cat="food" onclick="switchTab(this,'food')">Food</div>
+        <div class="event-tab" data-cat="all" onclick="switchTab(this,'all')">All Events</div>
+        <div class="event-tab" data-cat="my" onclick="switchTab(this,'my')">My Events</div>
+        <div class="event-tab" data-cat="skipped" onclick="switchTab(this,'skipped')">Skipped Events</div>
+      </div>
+      <button class="speak-btn" aria-label="Read aloud" onclick="speak('Here are some events near you.')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+    </div>
+    <div class="events-grid" id="eventsGrid"></div>
+    <div class="page-nav-row">
+      <button class="page-nav-btn prev" onclick="goTo(16)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>
+      <button class="page-nav-btn next" id="nextPageBtn" style="display:none;" onclick="goTo(20)">Next Page<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Screen 18: Event Detail (dynamic - swipes through current list) -->
+  <section class="screen" data-screen="18">
+    <div class="event-topbar">
+      <div class="event-tabs">
+        <div class="event-tab">Sports</div>
+        <div class="event-tab">Art</div>
+        <div class="event-tab">Food</div>
+        <div class="event-tab">All Events</div>
+        <div class="event-tab">My Events</div>
+        <div class="event-tab">Skipped Events</div>
+      </div>
+      <button class="speak-btn" id="edSpeak" aria-label="Read aloud" onclick="speakEventDetail()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+    </div>
+    <div class="event-detail-card">
+      <div class="event-detail-img" id="edEmoji"></div>
+      <div class="event-detail-info">
+        <h2 id="edName"></h2>
+        <div class="eline" id="edLocation"></div>
+        <div class="eline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v6l3 3M9 12l-2 2M9 12l2 5"/></svg><span id="edTime"></span></div>
+        <div class="eline" id="edDate"></div>
+        <p id="edDesc"></p>
+      </div>
+    </div>
+    <div class="event-actions">
+      <button class="btn-no" onclick="eventNo()">No<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      <button class="btn-register" onclick="eventRegister()">Register<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Screen 19: Success -->
+  <section class="screen landing" data-screen="19">
+    <svg class="success-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <p class="success-title">Success!</p>
+    <p class="success-text">We have signed you up with information from your profile.</p>
+    <div class="spacer"></div>
+    <div class="event-actions" style="width:100%;">
+      <button class="btn-no" onclick="undoLastRegistration()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/></svg>Undo</button>
+      <button class="btn-register" onclick="goTo(17)">Continue<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+    </div>
+  </section>
+
+  <!-- Screen 20: Chosen Events -->
+  <section class="screen" data-screen="20">
+    <button class="back-btn" aria-label="Back" onclick="goTo(17)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <h1 style="font-size:26px;margin-bottom:6px;">Here are all of the events you have chosen</h1>
+    <p class="subtitle">Which would you like to do today?</p>
+    <div class="events-grid" id="chosenEventsGrid"></div>
+  </section>
+
+  <!-- Screen 21: Chosen Event Detail -> Choose -> Have a good time -->
+  <section class="screen" data-screen="21">
+    <button class="back-btn" aria-label="Back" onclick="goTo(20)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back</button>
+    <div class="event-detail-card">
+      <div class="event-detail-img" id="cdEmoji"></div>
+      <div class="event-detail-info">
+        <h2 id="cdName"></h2>
+        <div class="eline" id="cdLocation"></div>
+        <div class="eline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v6l3 3M9 12l-2 2M9 12l2 5"/></svg><span id="cdTime"></span></div>
+        <div class="eline" id="cdDate"></div>
+        <p id="cdDesc"></p>
+      </div>
+    </div>
+    <div id="chooseArea" class="event-actions">
+      <button class="btn-register" style="flex:1;" onclick="confirmChoice()">Choose<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+    </div>
+    <div id="goodTimeMsg" style="display:none; text-align:center; padding-top:10px;">
+      <p class="success-title" style="font-size:24px;">Have a good time! &#127881;</p>
+    </div>
+  </section>
+
+</div>
+
+
+<script>
+  const totalSteps = 21;
+  let locationBranch = null;
+  function goTo(n){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.screen[data-screen="${n}"]`).classList.add('active');
+    document.getElementById('topbarFill').style.width = (n===1 ? 0 : (n-1)/(totalSteps-1)*100) + '%';
+    if(n === 17 && typeof resetEventTabs === 'function') resetEventTabs();
+    if(n === 20 && typeof renderChosenEvents === 'function') renderChosenEvents();
+  }
+  function goLocationNext(){
+    const selected = document.querySelector('#locationOptions .selected');
+    if(!selected) return;
+    locationBranch = selected.getAttribute('data-value');
+    goTo(locationBranch === 'walk' ? 11 : 12);
+  }
+  function toggleMulti(el){
+    el.classList.toggle('selected');
+  }
+  function select(el, groupId){
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.option-card, .level-card, .eventview-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const submitId = {
+      ttsOptions:'ttsSubmit',
+      contrastOptions:'contrastSubmit',
+      buttonOptions:'buttonSubmit',
+      complexityOptions:'complexitySubmit',
+      eventViewOptions:'eventViewSubmit',
+      priceOptions:'priceSubmit',
+      locationOptions:'locationSubmit',
+      walkOptions:'walkSubmit',
+      transportOptions:'transportSubmit',
+      wheelchairOptions:'wheelchairSubmit',
+      serviceAnimalOptions:'serviceAnimalSubmit'
+    }[groupId];
+    if(submitId) document.getElementById(submitId).disabled = false;
+
+    if(groupId === 'contrastOptions'){
+      const device = document.getElementById('device');
+      device.classList.remove('theme-high','theme-bw');
+      const value = el.getAttribute('data-value');
+      if(value === 'high') device.classList.add('theme-high');
+      else if(value === 'bw') device.classList.add('theme-bw');
+      // 'system' clears back to the default light theme
+    }
+  }
+  function finish(){ goTo(7); }
+
+  // ---- Events data & My Events tracking ----
+  const EVENTS = {
+    sports: [
+      {id:'soccer', emoji:'⚽', name:'Soccer', date:'July 15', time:'10 minute', location:'Bechtel Park', fullDate:'July 15 at 2pm', desc:'Learn to play soccer with friendly coaches. Everyone is welcome!'},
+      {id:'basketball', emoji:'🏀', name:'Basketball', date:'July 12', time:'5 minute', location:'YMCA Kitchener', fullDate:'July 12 (Tomorrow) at 2pm', desc:'Join us for a fun game of basketball. Everyone is welcome!'},
+      {id:'swimming', emoji:'🏊', name:'Swimming', date:'July 20', time:'10 minute', location:'Kitchener Aquatic Centre', fullDate:'July 20 at 11am', desc:'Cool off with an open swim session. All skill levels welcome!'},
+      {id:'running', emoji:'🏃', name:'Running', date:'July 20', time:'10 minute', location:'Victoria Park Trail', fullDate:'July 20 at 8am', desc:'Join a casual group run around the park. All paces welcome!'},
+      {id:'tennis', emoji:'🎾', name:'Tennis', date:'July 20', time:'10 minute', location:'Doon Valley Tennis Courts', fullDate:'July 20 at 3pm', desc:'Friendly tennis matches for beginners and pros alike.'},
+      {id:'volleyball', emoji:'🏐', name:'Volleyball', date:'July 20', time:'10 minute', location:'Budd Park', fullDate:'July 20 at 4pm', desc:'Beach volleyball meetup, teams formed on the spot!'}
+    ],
+    art: [
+      {id:'pottery', emoji:'🎨', name:'Pottery Workshop', date:'July 18', time:'15 minute', location:'Bechtel Park Studio', fullDate:'July 18 at 1pm', desc:'Get hands-on with clay in this beginner-friendly pottery session.'},
+      {id:'mural', emoji:'🖌️', name:'Community Mural Painting', date:'July 19', time:'20 minute', location:'Downtown Kitchener', fullDate:'July 19 at 10am', desc:'Help paint a community mural, no experience necessary.'},
+      {id:'lifedrawing', emoji:'✏️', name:'Life Drawing Class', date:'July 21', time:'10 minute', location:'KW Art Gallery', fullDate:'July 21 at 6pm', desc:'Practice figure drawing in a relaxed studio setting.'},
+      {id:'photowalk', emoji:'📷', name:'Photography Walk', date:'July 22', time:'5 minute', location:'Victoria Park', fullDate:'July 22 at 9am', desc:'Explore the park with your camera and a local photographer guide.'}
+    ],
+    food: [
+      {id:'farmersmarket', emoji:'🥕', name:'Farmers Market', date:'July 13', time:'10 minute', location:'Kitchener Market', fullDate:'July 13 at 9am', desc:'Browse local produce, baked goods, and crafts from area vendors.'},
+      {id:'pizza', emoji:'🍕', name:'Pizza Making Class', date:'July 16', time:'15 minute', location:'Community Kitchen', fullDate:'July 16 at 5pm', desc:'Learn to make pizza from scratch, dough included!'},
+      {id:'icecream', emoji:'🍦', name:'Ice Cream Social', date:'July 17', time:'5 minute', location:'Victoria Park', fullDate:'July 17 at 3pm', desc:'Free scoops and games at the annual ice cream social.'},
+      {id:'foodfair', emoji:'🌍', name:'Taste of the World Food Fair', date:'July 20', time:'25 minute', location:'Bingemans', fullDate:'July 20 at 12pm', desc:'Sample dishes from cuisines around the world.'}
+    ]
+  };
+  EVENTS.all = [...EVENTS.sports, ...EVENTS.art, ...EVENTS.food];
+
+  let registeredIds = [];
+  let declinedIds = [];
+  let lastList = [];
+  let currentIndex = 0;
+  let lastRegisteredId = null;
+
+  function eventCardHTML(e){
+    const check = registeredIds.includes(e.id) ? ' <span style="color:var(--blue);">&#10003;</span>' : '';
+    return `<div class="event-card clickable" onclick="openEventDetail('${e.id}')">
       <div class="event-thumb">${e.emoji}</div>
       <div class="event-card-body">
         <p class="ename">${e.name}${check}</p>
@@ -2611,121 +877,158 @@
         <p class="emeta">&#128694; ${e.time}</p>
       </div>
     </div>`;
-      }
+  }
 
-      function renderEvents(category) {
-        const grid = document.getElementById("eventsGrid");
-        if (!grid) return;
-        let list;
-        if (category === "my") {
-          list = EVENTS.all.filter((e) => registeredIds.includes(e.id));
-        } else {
-          list = (EVENTS[category] || []).filter(
-            (e) => !declinedIds.includes(e.id),
-          );
-        }
-        lastList = list;
-        if (list.length === 0) {
-          const msg =
-            category === "my"
-              ? "You haven't registered for anything yet."
-              : "No events left here.";
-          grid.innerHTML = `<p style="grid-column:1/-1;color:var(--ink-soft);font-size:14px;text-align:center;padding:24px 0;">${msg}</p>`;
-          return;
-        }
-        grid.innerHTML = list.map(eventCardHTML).join("");
-      }
+  function renderEvents(category){
+    const grid = document.getElementById('eventsGrid');
+    if(!grid) return;
+    let list;
+    if(category === 'my'){
+      list = EVENTS.all.filter(e => registeredIds.includes(e.id));
+    } else if(category === 'skipped'){
+      list = EVENTS.all.filter(e => declinedIds.includes(e.id));
+    } else {
+      list = (EVENTS[category] || []).filter(e => !declinedIds.includes(e.id));
+    }
+    lastList = list;
+    if(list.length === 0){
+      const msg = category === 'my' ? "You haven't registered for anything yet."
+        : category === 'skipped' ? "You haven't skipped anything yet."
+        : "No events left here.";
+      grid.innerHTML = `<p style="grid-column:1/-1;color:var(--ink-soft);font-size:14px;text-align:center;padding:24px 0;">${msg}</p>`;
+      return;
+    }
+    grid.innerHTML = list.map(eventCardHTML).join('');
+  }
 
-      function switchTab(tabEl, category) {
-        tabEl.parentElement
-          .querySelectorAll(".event-tab")
-          .forEach((t) => t.classList.remove("active"));
-        tabEl.classList.add("active");
-        renderEvents(category);
-      }
+  function updateNextPageVisibility(){
+    const btn = document.getElementById('nextPageBtn');
+    if(!btn) return;
+    btn.style.display = registeredIds.length > 0 ? 'flex' : 'none';
+  }
 
-      function resetEventTabs() {
-        const tabsBar = document
-          .querySelector("#eventsGrid")
-          .closest(".screen")
-          .querySelector(".event-tabs");
-        tabsBar
-          .querySelectorAll(".event-tab")
-          .forEach((t) => t.classList.remove("active"));
-        tabsBar.querySelector('[data-cat="sports"]').classList.add("active");
-        renderEvents("sports");
-      }
+  function switchTab(tabEl, category){
+    tabEl.parentElement.querySelectorAll('.event-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    renderEvents(category);
+  }
 
-      renderEvents("sports");
+  function resetEventTabs(){
+    const tabsBar = document.querySelector('#eventsGrid').closest('.screen').querySelector('.event-tabs');
+    tabsBar.querySelectorAll('.event-tab').forEach(t => t.classList.remove('active'));
+    tabsBar.querySelector('[data-cat="sports"]').classList.add('active');
+    renderEvents('sports');
+    updateNextPageVisibility();
+  }
 
-      // ---- Event Detail (swipe through the current list) ----
-      function openEventDetail(id) {
-        currentIndex = lastList.findIndex((e) => e.id === id);
-        if (currentIndex === -1) currentIndex = 0;
-        renderEventDetail();
-        goTo(18);
-      }
+  renderEvents('sports');
 
-      function renderEventDetail() {
-        const e = lastList[currentIndex];
-        if (!e) {
-          goTo(17);
-          return;
-        }
-        document.getElementById("edEmoji").textContent = e.emoji;
-        document.getElementById("edName").textContent = e.name;
-        document.getElementById("edLocation").textContent = e.location;
-        document.getElementById("edTime").textContent = e.time;
-        document.getElementById("edDate").textContent = e.fullDate;
-        document.getElementById("edDesc").textContent = e.desc;
-        document
-          .getElementById("edSpeak")
-          .setAttribute(
-            "data-text",
-            `${e.name} at ${e.location}, ${e.fullDate}. ${e.desc}`,
-          );
-      }
+  // ---- Event Detail (swipe through the current list) ----
+  function openEventDetail(id){
+    currentIndex = lastList.findIndex(e => e.id === id);
+    if(currentIndex === -1) currentIndex = 0;
+    renderEventDetail();
+    goTo(18);
+  }
 
-      function speakEventDetail() {
-        const btn = document.getElementById("edSpeak");
-        speak(btn.getAttribute("data-text") || "");
-      }
+  function renderEventDetail(){
+    const e = lastList[currentIndex];
+    if(!e){ goTo(17); return; }
+    document.getElementById('edEmoji').textContent = e.emoji;
+    document.getElementById('edName').textContent = e.name;
+    document.getElementById('edLocation').textContent = e.location;
+    document.getElementById('edTime').textContent = e.time;
+    document.getElementById('edDate').textContent = e.fullDate;
+    document.getElementById('edDesc').textContent = e.desc;
+    document.getElementById('edSpeak').setAttribute('data-text', `${e.name} at ${e.location}, ${e.fullDate}. ${e.desc}`);
+  }
 
-      function eventNo() {
-        const e = lastList[currentIndex];
-        if (e && !declinedIds.includes(e.id)) declinedIds.push(e.id);
-        currentIndex++;
-        if (currentIndex < lastList.length) {
-          renderEventDetail();
-        } else {
-          goTo(17);
-        }
-      }
+  function speakEventDetail(){
+    const btn = document.getElementById('edSpeak');
+    speak(btn.getAttribute('data-text') || '');
+  }
 
-      function eventRegister() {
-        const e = lastList[currentIndex];
-        if (e) {
-          if (!registeredIds.includes(e.id)) registeredIds.push(e.id);
-          lastRegisteredId = e.id;
-        }
-        goTo(19);
-      }
+  function eventNo(){
+    const e = lastList[currentIndex];
+    if(e && !declinedIds.includes(e.id)) declinedIds.push(e.id);
+    currentIndex++;
+    if(currentIndex < lastList.length){
+      renderEventDetail();
+    } else {
+      goTo(17);
+    }
+  }
 
-      function undoLastRegistration() {
-        if (lastRegisteredId) {
-          registeredIds = registeredIds.filter((id) => id !== lastRegisteredId);
-          lastRegisteredId = null;
-        }
-        goTo(17);
-      }
+  function eventRegister(){
+    const e = lastList[currentIndex];
+    if(e){
+      if(!registeredIds.includes(e.id)) registeredIds.push(e.id);
+      lastRegisteredId = e.id;
+    }
+    updateNextPageVisibility();
+    goTo(19);
+  }
 
-      function speak(text) {
-        if ("speechSynthesis" in window) {
-          const u = new SpeechSynthesisUtterance(text);
-          window.speechSynthesis.cancel();
-          window.speechSynthesis.speak(u);
-        }
-      }
-    </script>
-  </body>
+  function undoLastRegistration(){
+    if(lastRegisteredId){
+      registeredIds = registeredIds.filter(id => id !== lastRegisteredId);
+      lastRegisteredId = null;
+    }
+    updateNextPageVisibility();
+    goTo(17);
+  }
+
+  function eventCardHTMLChosen(e){
+    const check = registeredIds.includes(e.id) ? ' <span style="color:var(--blue);">&#10003;</span>' : '';
+    return `<div class="event-card clickable" onclick="openChosenEventDetail('${e.id}')">
+      <div class="event-thumb">${e.emoji}</div>
+      <div class="event-card-body">
+        <p class="ename">${e.name}${check}</p>
+        <p class="emeta">${e.date}</p>
+        <p class="emeta">&#128694; ${e.time}</p>
+      </div>
+    </div>`;
+  }
+
+  function renderChosenEvents(){
+    const grid = document.getElementById('chosenEventsGrid');
+    if(!grid) return;
+    const list = EVENTS.all.filter(e => registeredIds.includes(e.id));
+    lastList = list;
+    if(list.length === 0){
+      grid.innerHTML = `<p style="grid-column:1/-1;color:var(--ink-soft);font-size:14px;text-align:center;padding:24px 0;">You haven't registered for anything yet.</p>`;
+      return;
+    }
+    grid.innerHTML = list.map(eventCardHTMLChosen).join('');
+  }
+
+  function openChosenEventDetail(id){
+    const e = EVENTS.all.find(ev => ev.id === id);
+    if(!e){ goTo(20); return; }
+    document.getElementById('cdEmoji').textContent = e.emoji;
+    document.getElementById('cdName').textContent = e.name;
+    document.getElementById('cdLocation').textContent = e.location;
+    document.getElementById('cdTime').textContent = e.time;
+    document.getElementById('cdDate').textContent = e.fullDate;
+    document.getElementById('cdDesc').textContent = e.desc;
+    document.getElementById('chooseArea').style.display = 'flex';
+    document.getElementById('goodTimeMsg').style.display = 'none';
+    goTo(21);
+  }
+
+  function confirmChoice(){
+    document.getElementById('chooseArea').style.display = 'none';
+    document.getElementById('goodTimeMsg').style.display = 'block';
+  }
+
+  function speak(text){
+    if('speechSynthesis' in window){
+      const u = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    }
+  }
+</script>
+
+</body>
 </html>
